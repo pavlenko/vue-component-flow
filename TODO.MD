@@ -1,0 +1,5 @@
+- drag & drop support
+- editable mode on/off
+- node types
+- line types?
+- extensions?
