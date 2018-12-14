@@ -1,5 +1,6 @@
 <script>
-    module.exports = {
+    export default {
+        name: 'FlowNode',
         props: {
             type: {
                 type: String
@@ -11,5 +12,5 @@
                 type: String
             }
         }
-    };
+    }
 </script>
