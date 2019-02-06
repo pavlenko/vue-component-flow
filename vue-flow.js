@@ -1,6 +1,7 @@
 var VueFlow = {
     components: {},
     utils: {
+        snapTo: function (value, snap) { return Math.round(Math.round(value / snap) * snap); },
         generateUUID: function () {
             var date = new Date().getTime();
 
@@ -61,25 +62,15 @@ VueFlow.components['vue-flow-block'] = Vue.component('vue-flow-block', {
         '        <div class="vf-port" v-for="(port, index) in outputs" :class="{active: port.active}"></div>' +
         '    </div>' +
         '</div>',
-    created: function () {
-        this.mouseX = 0;
-        this.mouseY = 0;
-
-        this.lastMouseX = 0;
-        this.lastMouseY = 0;
-
-        this.linking  = false;
-        this.dragging = false;
-    },
     mounted: function () {
-        document.documentElement.addEventListener('mousemove', this.handleMove, true);
-        document.documentElement.addEventListener('mousedown', this.handleDown, true);
-        document.documentElement.addEventListener('mouseup', this.handleUp, true);
+        document.documentElement.addEventListener('mousedown', this.onMouseDown, true);
+        document.documentElement.addEventListener('mousemove', this.onMouseMove, true);
+        document.documentElement.addEventListener('mouseup', this.onMouseUp, true);
     },
     beforeDestroy: function () {
-        document.documentElement.removeEventListener('mousemove', this.handleMove, true);
-        document.documentElement.removeEventListener('mousedown', this.handleDown, true);
-        document.documentElement.removeEventListener('mouseup', this.handleUp, true);
+        document.documentElement.removeEventListener('mousedown', this.onMouseDown, true);
+        document.documentElement.removeEventListener('mousemove', this.onMouseMove, true);
+        document.documentElement.removeEventListener('mouseup', this.onMouseUp, true);
     },
     methods: {
         selectBlock: function () {
@@ -88,44 +79,47 @@ VueFlow.components['vue-flow-block'] = Vue.component('vue-flow-block', {
         removeBlock: function () {
             this.$emit('remove');
         },
-        handleMove: function (e) {
-            this.mouseX = e.pageX || e.clientX + document.documentElement.scrollLeft;
-            this.mouseY = e.pageY || e.clientY + document.documentElement.scrollTop;
+        onMouseDown: function (event) {
+            var rect = this.$parent.$el.getBoundingClientRect();
 
-            if (this.dragging && !this.linking) {
-                let diffX = this.mouseX - this.lastMouseX;
-                let diffY = this.mouseY - this.lastMouseY;
+            this.cursorPositionX = event.pageX || event.clientX + document.documentElement.scrollLeft;
+            this.cursorPositionY = event.pageY || event.clientY + document.documentElement.scrollTop;
 
-                this.lastMouseX = this.mouseX;
-                this.lastMouseY = this.mouseY;
+            this.cursorOffsetX = this.cursorPositionX - rect.left;
+            this.cursorOffsetY = this.cursorPositionY - rect.top;
 
-                this.moveWithDiff(diffX, diffY);
+            var target = event.target || event.srcElement;
 
-                this.hasDragged = true
-            }
-        },
-        handleDown: function (e) {
-            this.mouseX = e.pageX || e.clientX + document.documentElement.scrollLeft;
-            this.mouseY = e.pageY || e.clientY + document.documentElement.scrollTop;
-
-            this.lastMouseX = this.mouseX;
-            this.lastMouseY = this.mouseY;
-
-            const target = e.target || e.srcElement;
-            if (this.$el.contains(target) && e.which === 1) {
+            if (this.$el.contains(target) && event.which === 1) {
                 this.dragging = true;
 
                 this.$emit('select');
 
-                if (e.preventDefault) e.preventDefault()
+                if (event.preventDefault) event.preventDefault()
             }
         },
-        handleUp: function () {
+        onMouseMove: function (event) {
+            var rect = this.$parent.$el.getBoundingClientRect();
+
+            this.cursorPositionX = event.pageX || event.clientX + document.documentElement.scrollLeft;
+            this.cursorPositionY = event.pageY || event.clientY + document.documentElement.scrollTop;
+
+            if (this.dragging && !this.linking) {
+                var newX = VueFlow.utils.snapTo(this.cursorPositionX - rect.left - this.cursorOffsetX, this.$parent.gridSize);
+                var newY = VueFlow.utils.snapTo(this.cursorPositionY - rect.top - this.cursorOffsetY, this.$parent.gridSize);
+
+                this.$emit('update:x', newX);
+                this.$emit('update:y', newY);
+
+                this.hasDragged = true
+            }
+        },
+        onMouseUp: function () {
             if (this.dragging) {
                 this.dragging = false;
 
                 if (this.hasDragged) {
-                    //this.save();
+                    this.$emit('update');
                     this.hasDragged = false
                 }
             }
@@ -133,19 +127,18 @@ VueFlow.components['vue-flow-block'] = Vue.component('vue-flow-block', {
             if (this.linking) {
                 this.linking = false
             }
-        },
-        moveWithDiff (diffX, diffY) {
-            let left = this.x + diffX;
-            let top = this.y + diffY;
-
-            this.$emit('update:x', left);
-            this.$emit('update:y', top);
         }
     }
 });
 
 VueFlow.components['vue-flow-paper'] = Vue.component('vue-flow-paper', {
     props: {
+        gridShow: Boolean,
+        gridSize: {
+            type: Number,
+            default: 10,
+            validator: function (value) { return value > 0; }
+        },
         blocks: {
             type: Array,
             default: function () { return []; }
@@ -157,7 +150,12 @@ VueFlow.components['vue-flow-paper'] = Vue.component('vue-flow-paper', {
     },
     template:
         '<div class="vf-paper" style="height: 500px">' +
-        '    <vue-flow-block v-for="block in blocks" :key="block.id" v-bind.sync="block" @select="selectBlock(block)" @remove="removeBlock(block)" />' +
+        '    <vue-flow-block v-for="block in blocks"' +
+        '                    :key="block.id"' +
+        '                    v-bind.sync="block"' +
+        '                    @select="selectBlock(block)"' +
+        '                    @update="updateBlock(block)"' +
+        '                    @remove="removeBlock(block)" />' +
         '</div>',
     methods: {
         insertBlock: function (type) {
@@ -179,6 +177,9 @@ VueFlow.components['vue-flow-paper'] = Vue.component('vue-flow-paper', {
                     item.selected = false;
                 }
             });
+        },
+        updateBlock: function (block) {
+            console.log(arguments);
         },
         removeBlock: function (block) {
             var index = this.blocks.findIndex(function (item) {
