@@ -2,7 +2,7 @@ Vue.component('vf-paper', {
     props: {
         scene: {
             type: Object,
-            default: function () { return {blocks: [], links: [], container: {}}; }
+            default: function () { return {blocks: [], links: []}; }
         }
     },
     data: function () {
@@ -70,5 +70,20 @@ Vue.component('vf-paper', {
             //TODO update scene
         },
         // Instance methods
+        sceneImport: function () {
+            //TODO process blocks & links from scene object to internal blocks & links properties
+            this.blocks = this.scene.blocks;
+            this.links  = this.scene.links;
+        },
+        sceneExport: function () {
+            //TODO process blocks & links internal properties to scene object blocks & links
+            return {
+                blocks: this.blocks,
+                links:  this.links,
+            };
+        },
+        sceneUpdate: function () {
+            this.$emit('update:scene', this.sceneExport());
+        },
     }
 });
