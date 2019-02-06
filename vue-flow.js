@@ -13,6 +13,29 @@ var VueFlow = {
                 date = Math.floor(date / 16);
                 return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
             });
+        },
+        getElementPosition: function (element) {
+            var rect = element.getBoundingClientRect();
+
+            return {
+                top:  Math.round(rect.top + window.pageYOffset),
+                left: Math.round(rect.left + window.pageXOffset)
+            }
+        },
+        getCursorPosition: function (event, element) {
+            var cursorX = event.pageX || event.clientX + document.documentElement.scrollLeft;
+            var cursorY = event.pageY || event.clientY + document.documentElement.scrollTop;
+
+            if (element) {
+                var position = VueFlow.utils.getElementPosition(element);
+
+                return {
+                    x: cursorX - position.left,
+                    y: cursorY - position.top
+                }
+            }
+
+            return {x: cursorX, y: cursorY}
         }
     }
 };
