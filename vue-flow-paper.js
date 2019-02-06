@@ -33,7 +33,26 @@ Vue.component('vf-paper', {
         // Native listeners
         onMouseDown: function (e) {
             //TODO save initial dragging position
-            //TODO deselect all blocks
+            var target = e.target || e.srcElement;
+
+            if ((target === this.$el || target.matches('svg, svg *')) && e.which === 1) {
+                //this.dragging = true
+
+                var position = VueFlow.utils.getCursorPosition(e, this.$el);
+
+                this.cursorPositionX = position.left;
+                this.cursorPositionY = position.top;
+                //let mouse = mouseHelper.getMousePosition(this.$el, e)
+                //this.mouseX = mouse.x
+                //this.mouseY = mouse.y
+
+                //this.lastMouseX = this.mouseX
+                //this.lastMouseY = this.mouseY
+
+                this.blockSelect(-1);
+
+                if (e.preventDefault) e.preventDefault()
+            }
         },
         onMouseMove: function (e) {
             //TODO update center position via predefined top & left offsets if dragging
@@ -59,9 +78,7 @@ Vue.component('vf-paper', {
             //TODO ???... disallow to start linking from inputs
             //TODO update scene
         },
-        onBlockSelect: function (block) {
-            //TODO deselect blocks & select passed block
-        },
+        onBlockSelect: function (block) { this.blockSelect(block.id); },
         onBlockUpdate: function (block) {
             //TODO update scene
         },
@@ -85,8 +102,39 @@ Vue.component('vf-paper', {
         sceneUpdate: function () {
             this.$emit('update:scene', this.sceneExport());
         },
-        blockInsert: function () {},
-        blockSelect: function () {},
-        blockRemove: function () {},
+        blockInsert: function (type) {
+            //TODO create block from type factory
+            this.blocks.push({
+                id: VueFlow.utils.generateUUID(),
+                x: 0,
+                y: 0,
+                selected: false
+            });
+
+            this.sceneUpdate();
+        },
+        blockSelect: function (blockID) {
+            this.blocks.forEach(function (block) {
+                block.selected = (block.id === blockID);
+            });
+        },
+        blockRemove: function (blockID) {
+            this.links.forEach(function (link) {
+                if (link.sourceBlockID === blockID || link.targetBlockID === blockID) {
+                    this.linkRemove(link.id);
+                }
+            }.bind(this));
+
+            this.blocks = this.blocks.filter(function (block) {
+                return block.id !== blockID;
+            });
+
+            this.sceneUpdate()
+        },
+        linkRemove: function (linkID) {
+            this.links = this.links.filter(function (link) {
+                return link.id !== linkID;
+            })
+        }
     }
 });
