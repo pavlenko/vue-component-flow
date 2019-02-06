@@ -1,0 +1,22 @@
+.vf-paper {
+    position: relative;
+    overflow: hidden;
+
+    background-image: linear-gradient(90deg, rgba(102, 102, 102, 0.2) 1px, transparent 1px), linear-gradient(rgba(102, 102, 102, 0.2) 1px, transparent 1px);
+    background-size: 10px 10px;
+}
+
+.vf-block {
+    position: absolute;
+    box-sizing: border-box;
+    border: 1px solid black;
+    background: white;
+    z-index: 1;
+    opacity: 0.9;
+    cursor: move;
+}
+
+.vf-block.selected {
+    border: 1px solid red;
+    z-index: 2;
+}

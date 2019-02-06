@@ -7,6 +7,7 @@
     <title></title>
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="vue-flow.css">
 </head>
 <body>
 <div class="container">
@@ -15,11 +16,25 @@
 <script src="bower_components/jquery/dist/jquery.min.js"></script>
 <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="bower_components/vue/dist/vue.min.js"></script>
+<script src="vue-flow.js"></script>
 <script>
     new Vue({
         el: '#app',
-        data: {},
-        template: '<div></div>'
+        data: {
+            blocks: [],
+            links: []
+        },
+        template:
+            '<div>' +
+            '    <vue-flow-paper ref="paper" :blocks="blocks"></vue-flow-paper>' +
+            '    <button type="button" class="btn btn-default" v-on:click="insertBlock">add</button>' +
+            '    <pre style="font-size: 10px">{{ JSON.stringify(blocks, null, \'    \') }}</pre>' +
+            '</div>',
+        methods: {
+            insertBlock: function () {
+                this.$refs.paper.insertBlock();
+            }
+        }
     });
 </script>
 </body>

@@ -13,7 +13,7 @@ var VueFlow = {
     }
 };
 
-VueFlow.components['vue-flow-block-item'] = Vue.component('vue-flow-block-item', {
+VueFlow.components['vue-flow-block'] = Vue.component('vue-flow-block', {
     props: {
         x: {
             type: Number,
@@ -28,7 +28,15 @@ VueFlow.components['vue-flow-block-item'] = Vue.component('vue-flow-block-item',
             default: 100
         },
         selected: Boolean,
-        title: String
+        title: String,
+        inputs: {
+            type: Array,
+            default: function () { return []; }
+        },
+        outputs: {
+            type: Array,
+            default: function () { return []; }
+        }
     },
     computed: {
         style: function () {
@@ -43,14 +51,14 @@ VueFlow.components['vue-flow-block-item'] = Vue.component('vue-flow-block-item',
         '<div class="vf-block" :class="{selected: selected}" :style="style">' +
         '    <div class="vf-block-header">' +
         '        <div>{{ title }}</div>' +
-        '        <button type="button" v-on:click="remove">x</button>' +
+        '        <button type="button" v-on:click="removeBlock">x</button>' +
         '    </div>' +
         '    <div class="vf-block-body"></div>' +
         '    <div class="vf-port-group vf-port-group-input">' +
-        '        <div class="vf-port" v-for="(port, index) in ports(\'input\')" :class="{active: port.active}"></div>' +
+        '        <div class="vf-port" v-for="(port, index) in inputs" :class="{active: port.active}"></div>' +
         '    </div>' +
         '    <div class="vf-port-group vf-port-group-output">' +
-        '        <div class="vf-port" v-for="(port, index) in ports(\'output\')" :class="{active: port.active}"></div>' +
+        '        <div class="vf-port" v-for="(port, index) in outputs" :class="{active: port.active}"></div>' +
         '    </div>' +
         '</div>',
     created: function () {
@@ -74,6 +82,12 @@ VueFlow.components['vue-flow-block-item'] = Vue.component('vue-flow-block-item',
         document.documentElement.removeEventListener('mouseup', this.handleUp, true);
     },
     methods: {
+        selectBlock: function () {
+
+        },
+        removeBlock: function () {
+            this.$emit('remove');
+        },
         handleMove: function (e) {
             this.mouseX = e.pageX || e.clientX + document.documentElement.scrollLeft;
             this.mouseY = e.pageY || e.clientY + document.documentElement.scrollTop;
@@ -119,24 +133,34 @@ VueFlow.components['vue-flow-block-item'] = Vue.component('vue-flow-block-item',
             if (this.linking) {
                 this.linking = false
             }
+        },
+        moveWithDiff (diffX, diffY) {
+            let left = this.x + diffX;
+            let top = this.y + diffY;
+
+            this.$emit('update:x', left);
+            this.$emit('update:y', top);
         }
     }
 });
 
 VueFlow.components['vue-flow-paper'] = Vue.component('vue-flow-paper', {
     props: {
-        blocks: Array
+        blocks: {
+            type: Array,
+            default: function () { return []; }
+        },
+        links:  {
+            type: Array,
+            default: function () { return []; }
+        }
     },
     template:
-        '<div class="vf-paper">' +
-        '    <vue-flow-block-item v-for="block in blocks"' +
-        '                         :key="block.id"' +
-        '                         v-bind.sync="block"' +
-        '                         @select="blockSelect(block)"' +
-        '                         @delete="blockDelete(block)" />' +
+        '<div class="vf-paper" style="height: 500px">' +
+        '    <vue-flow-block v-for="block in blocks" :key="block.id" v-bind.sync="block" @select="selectBlock(block)" @remove="removeBlock(block)" />' +
         '</div>',
     methods: {
-        insert: function (type) {
+        insertBlock: function (type) {
             this.blocks.push({
                 id:       VueFlow.utils.generateUUID(),
                 x:        0,
@@ -147,9 +171,18 @@ VueFlow.components['vue-flow-paper'] = Vue.component('vue-flow-paper', {
                 outputs:  []
             });
         },
-        remove: function (blockID) {
-            var index = this.blocks.findIndex(function (block) {
-                return block.id === blockID;
+        selectBlock: function (block) {
+            block.selected = true;
+
+            this.blocks.forEach(function (item) {
+                if (item.id !== block.id && item.selected) {
+                    item.selected = false;
+                }
+            });
+        },
+        removeBlock: function (block) {
+            var index = this.blocks.findIndex(function (item) {
+                return item.id === block.id;
             });
 
             this.blocks.splice(index, 1);
