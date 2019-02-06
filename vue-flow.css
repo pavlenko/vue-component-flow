@@ -20,3 +20,21 @@
     border: 1px solid red;
     z-index: 2;
 }
+
+.vf-port-group.vf-port-group-input {
+    float: left;
+    margin-left: -5px;
+}
+
+.vf-port-group.vf-port-group-output {
+    float: right;
+    margin-right: -5px;
+}
+
+.vf-port {
+    width: 10px;
+    height: 10px;
+    border: 1px solid black;
+    border-radius: 50%;
+    background: #fff;
+}

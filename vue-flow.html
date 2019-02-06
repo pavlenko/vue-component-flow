@@ -21,14 +21,20 @@
     new Vue({
         el: '#app',
         data: {
-            blocks: [],
-            links: []
+            blocks: [
+                {id: 'b-1', x: 10, y: 10, outputs: [{id: 'p-1'}]},
+                {id: 'b-2', x: 310, y: 10, inputs: [{id: 'p-2'}]}
+            ],
+            links: [
+                {id: 'l-1', sourceBlock: 'b-1', sourcePort: 'p-1', targetBlock: 'b-2', targetPort: 'p-2'}
+            ]
         },
         template:
             '<div>' +
-            '    <vue-flow-paper ref="paper" :blocks="blocks"></vue-flow-paper>' +
+            '    <vue-flow-paper ref="paper" :blocks="blocks" :links="links"></vue-flow-paper>' +
             '    <button type="button" class="btn btn-default" v-on:click="insertBlock">add</button>' +
             '    <pre style="font-size: 10px">{{ JSON.stringify(blocks, null, \'    \') }}</pre>' +
+            '    <pre style="font-size: 10px">{{ JSON.stringify(links, null, \'    \') }}</pre>' +
             '</div>',
         methods: {
             insertBlock: function () {
