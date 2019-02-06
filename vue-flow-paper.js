@@ -85,5 +85,8 @@ Vue.component('vf-paper', {
         sceneUpdate: function () {
             this.$emit('update:scene', this.sceneExport());
         },
+        blockInsert: function () {},
+        blockSelect: function () {},
+        blockRemove: function () {},
     }
 });
