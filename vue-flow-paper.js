@@ -1,4 +1,16 @@
 Vue.component('vf-paper', {
+    template:
+        '<div class="vf-paper">' +
+        '    <svg class="vf-links">TODO</svg>' +
+        '    <div class="vf-blocks">' +
+        '        <vf-block v-for="block in blocks"' +
+        '                  :key="block.id"' +
+        '                  v-bind.sync="block"' +
+        '                  @block-select="onBlockSelect(block)"' +
+        '                  @block-update="onBlockUpdate(block)"' +
+        '                  @block-remove="onBlockRemove(block)" />' +
+        '    </div>' +
+        '</div>',
     props: {
         scene: {
             type: Object,
@@ -79,13 +91,8 @@ Vue.component('vf-paper', {
             //TODO update scene
         },
         onBlockSelect: function (block) { this.blockSelect(block.id); },
-        onBlockUpdate: function (block) {
-            //TODO update scene
-        },
-        onBlockRemove: function (block) {
-            //TODO remove any links connected to block
-            //TODO update scene
-        },
+        onBlockUpdate: function (block) { this.sceneUpdate(); },
+        onBlockRemove: function (block) { this.blockRemove(block.id); },
         // Instance methods
         sceneImport: function () {
             //TODO process blocks & links from scene object to internal blocks & links properties
