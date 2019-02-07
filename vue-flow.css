@@ -14,6 +14,8 @@
     z-index: 1;
     opacity: 0.9;
     cursor: move;
+    min-width: 100px;
+    min-height: 40px;
 }
 
 .vf-block.selected {

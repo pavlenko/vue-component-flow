@@ -3,10 +3,15 @@ Vue.component('vf-block', {
         '<div class="vf-block" :style="style">' +
         '    <div class="vf-block-header">' +
         '        <div class="vf-block-tools">' +
-        '            <button type="button" @click="$emit(\'block-delete\')">x</button>' +
+        '            <button type="button" @click="$emit(\'block-remove\')">x</button>' +
         '        </div>' +
         '    </div>' +
+        '    <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
         '</div>',
+    props: {
+        x: Number,
+        y: Number
+    },
     computed: {
         style: function () {
             return {top: this.y + 'px', left: this.x + 'px'};
@@ -26,6 +31,14 @@ Vue.component('vf-block', {
         onMouseDown: function (e) {
             //TODO save cursor position
             //TODO resolve dragging/linking
+
+            if (this.$el.contains(e.target || e.srcElement) && e.which === 1) {
+                this.dragging = true;
+
+                this.$emit('block-select');
+
+                if (e.preventDefault) e.preventDefault();
+            }
         },
         onMouseMove: function (e) {
             //TODO update position if dragging
@@ -34,6 +47,16 @@ Vue.component('vf-block', {
         },
         onMouseUp: function (e) {
             //TODO reset state
-        }
+        },
+        onPortMouseDown: function (e) {
+            this.linking = true;
+            //TODO emit event outside & detect break event
+            this.$emit('linking-start');
+            if (e.preventDefault) e.preventDefault();
+        },
+        onPortMouseUp: function (e) {
+            this.$emit('linking-stop');
+            if (e.preventDefault) e.preventDefault();
+        },
     }
 });

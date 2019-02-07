@@ -2,14 +2,15 @@ Vue.component('vf-paper', {
     template:
         '<div class="vf-paper">' +
         '    <svg class="vf-links">TODO</svg>' +
-        '    <div class="vf-blocks">' +
-        '        <vf-block v-for="block in blocks"' +
-        '                  :key="block.id"' +
-        '                  v-bind.sync="block"' +
-        '                  @block-select="onBlockSelect(block)"' +
-        '                  @block-update="onBlockUpdate(block)"' +
-        '                  @block-remove="onBlockRemove(block)" />' +
-        '    </div>' +
+        '    <vf-block v-for="block in blocks"' +
+        '              :key="block.id"' +
+        '              v-bind.sync="block"' +
+        '              @block-select="onBlockSelect(block)"' +
+        '              @block-update="onBlockUpdate(block)"' +
+        '              @block-remove="onBlockRemove(block)"' +
+        '              @linking-start="onLinkingStart(block, $event)"' +
+        '              @linking-stop="onLinkingStop(block, $event)"' +
+        '    />' +
         '</div>',
     props: {
         scene: {
