@@ -1,12 +1,32 @@
 Vue.component('vf-block', {
     template:
+        //TODO use native table if possible
         '<div class="vf-block" :class="{selected: selected}" :style="style">' +
-        '    <div class="vf-block-header">' +
-        '        <div class="vf-block-tools">' +
-        '            <button type="button" @click="$emit(\'block-remove\')">x</button>' +
-        '        </div>' +
+        '    <div class="vf-block-top">' +
+        '        <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
+        '        <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
+        '        <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
         '    </div>' +
-        '    <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
+        '<div class="vf-block-middle">' +
+        '    <div class="vf-block-left">' +
+        '        <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
+        '        <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
+        '        <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
+        '    </div>' +
+        '    <div class="vf-block-center">' +
+        '        <button type="button" @click="$emit(\'block-remove\')">x</button>' +
+        '    </div>' +
+        '    <div class="vf-block-right">' +
+        '        <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
+        '        <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
+        '        <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
+        '    </div>' +
+        '</div>' +
+        '    <div class="vf-block-bottom">' +
+        '        <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
+        '        <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
+        '        <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
+        '    </div>' +
         '</div>',
     props: {
         x: Number,
