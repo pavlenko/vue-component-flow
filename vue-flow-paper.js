@@ -1,8 +1,11 @@
 Vue.component('vf-paper', {
     template:
         '<div class="vf-paper" :style="style">' +
-        '    <svg class="vf-links">TODO</svg>' +
-        '    <vf-block v-for="block in blocks"' +
+        '    <svg class="vf-links">' +
+        '        <vf-link v-for="link in _links" :key="link.id"/>' +
+        '    </svg>' +
+        '    <vf-block ref="blocks"' +
+        '              v-for="block in blocks"' +
         '              :key="block.id"' +
         '              v-bind.sync="block"' +
         '              @block-select="onBlockSelect(block)"' +
@@ -39,6 +42,10 @@ Vue.component('vf-paper', {
                 'background-image': 'linear-gradient(90deg, ' + this.gridColorForeground + ' 1px, transparent 1px), linear-gradient(' + this.gridColorForeground + ' 1px, transparent 1px)',
                 'background-size':  this.gridSize + 'px ' + this.gridSize + 'px',
             }
+        },
+        _links: function () {
+            //TODO do not use reference to dom elements, calculate coordinates based on config both for blocks & ports
+            console.log(this.$refs.blocks);
         }
     },
     mounted: function () {
