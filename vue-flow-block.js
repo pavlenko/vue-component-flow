@@ -46,8 +46,6 @@ Vue.component('vf-block', {
             }
         },
         onMouseMove: function (e) {
-            //TODO update target of link if linking
-
             var rect = VueFlow.utils.getElementPosition(this.$parent.$el);
             var pos  = VueFlow.utils.getCursorPosition(e);
 
@@ -77,7 +75,6 @@ Vue.component('vf-block', {
         },
         onPortMouseDown: function (e) {
             this.linking = true;
-            //TODO emit event outside & detect break event
             this.$emit('linking-start');
             if (e.preventDefault) e.preventDefault();
         },
