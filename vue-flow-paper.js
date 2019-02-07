@@ -1,6 +1,6 @@
 Vue.component('vf-paper', {
     template:
-        '<div class="vf-paper">' +
+        '<div class="vf-paper" :style="style">' +
         '    <svg class="vf-links">TODO</svg>' +
         '    <vf-block v-for="block in blocks"' +
         '              :key="block.id"' +
@@ -13,6 +13,10 @@ Vue.component('vf-paper', {
         '    />' +
         '</div>',
     props: {
+        gridShow: Boolean,
+        gridSize: {type: Number, default: 10, validator: function (value) { return value > 0; }},
+        gridColorForeground: {type: String, default: 'rgba(102, 102, 102, 0.2)'},
+        gridColorBackground: {type: String, default: '#ffffff'},
         scene: {
             type: Object,
             default: function () { return {blocks: [], links: []}; }
@@ -23,6 +27,19 @@ Vue.component('vf-paper', {
             blocks: [],
             links: [],
         };
+    },
+    computed: {
+        style: function () {
+            if (!this.gridShow) {
+                return {};
+            }
+
+            return {
+                'background-color': this.gridColorBackground,
+                'background-image': 'linear-gradient(90deg, ' + this.gridColorForeground + ' 1px, transparent 1px), linear-gradient(' + this.gridColorForeground + ' 1px, transparent 1px)',
+                'background-size':  this.gridSize + 'px ' + this.gridSize + 'px',
+            }
+        }
     },
     mounted: function () {
         document.documentElement.addEventListener('mousedown', this._onMouseDown = this.onMouseDown.bind(this), true);
@@ -144,5 +161,11 @@ Vue.component('vf-paper', {
                 return link.id !== linkID;
             })
         }
+    },
+    watch: {
+        blocksContent () {
+            this.importBlocksContent()
+        },
+        scene: function () { this.sceneImport(); }
     }
 });

@@ -31,6 +31,11 @@ Vue.component('vf-block', {
         onMouseDown: function (e) {
             //TODO save cursor position
             //TODO resolve dragging/linking
+            var rect = VueFlow.utils.getElementPosition(this.$el);
+            var pos  = VueFlow.utils.getCursorPosition(e);
+
+            this.cursorOffsetX = pos.x - rect.x;
+            this.cursorOffsetY = pos.y - rect.y;
 
             if (this.$el.contains(e.target || e.srcElement) && e.which === 1) {
                 this.dragging = true;
@@ -41,12 +46,34 @@ Vue.component('vf-block', {
             }
         },
         onMouseMove: function (e) {
-            //TODO update position if dragging
             //TODO update target of link if linking
-            //TODO emit update
+
+            var rect = VueFlow.utils.getElementPosition(this.$parent.$el);
+            var pos  = VueFlow.utils.getCursorPosition(e);
+
+            if (this.dragging && !this.linking) {
+                var newX = VueFlow.utils.snapTo(pos.x - rect.x - this.cursorOffsetX, this.$parent.gridSize);
+                var newY = VueFlow.utils.snapTo(pos.y - rect.y - this.cursorOffsetY, this.$parent.gridSize);
+
+                this.$emit('update:x', newX);
+                this.$emit('update:y', newY);
+
+                this.hasDragged = true;
+            }
         },
         onMouseUp: function (e) {
-            //TODO reset state
+            if (this.dragging) {
+                this.dragging = false;
+
+                if (this.hasDragged) {
+                    this.$emit('update');
+                    this.hasDragged = false
+                }
+            }
+
+            if (this.linking) {
+                this.linking = false
+            }
         },
         onPortMouseDown: function (e) {
             this.linking = true;

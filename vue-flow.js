@@ -18,8 +18,8 @@ var VueFlow = {
             var rect = element.getBoundingClientRect();
 
             return {
-                top:  Math.round(rect.top + window.pageYOffset),
-                left: Math.round(rect.left + window.pageXOffset)
+                y: Math.round(rect.top + window.pageYOffset),
+                x: Math.round(rect.left + window.pageXOffset)
             }
         },
         getCursorPosition: function (event, element) {
