@@ -51,7 +51,7 @@ Vue.component('vf-paper', {
         //this.centerY = this.$el.clientHeight / 2;
 
         //this.importBlocksContent()
-        //this.importScene()
+        this.sceneImport();
     },
     beforeDestroy: function () {
         document.documentElement.removeEventListener('mousedown', this._onMouseDown, true);

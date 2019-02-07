@@ -1,6 +1,6 @@
 Vue.component('vf-block', {
     template:
-        '<div class="vf-block" :style="style">' +
+        '<div class="vf-block" :class="{selected: selected}" :style="style">' +
         '    <div class="vf-block-header">' +
         '        <div class="vf-block-tools">' +
         '            <button type="button" @click="$emit(\'block-remove\')">x</button>' +
@@ -10,7 +10,8 @@ Vue.component('vf-block', {
         '</div>',
     props: {
         x: Number,
-        y: Number
+        y: Number,
+        selected: Boolean
     },
     computed: {
         style: function () {
