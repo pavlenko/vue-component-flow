@@ -1,31 +1,34 @@
 Vue.component('vf-block', {
     template:
-        //TODO use native table if possible
         '<div class="vf-block" :class="{selected: selected}" :style="style">' +
-        '    <div class="vf-block-top">' +
-        '        <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
-        '        <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
-        '        <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
+        '    <div style="">' +
+        '        <div style="display: table; margin: 0 auto">' +
+        '            <div style="display: table-cell" class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
+        '            <div style="display: table-cell" class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
+        '            <div style="display: table-cell" class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
+        '        </div>' +
         '    </div>' +
-        '<div class="vf-block-middle">' +
-        '    <div class="vf-block-left">' +
-        '        <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
-        '        <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
-        '        <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
+        '    <div style="display: table; width: 100%">' +
+        '    <div style="display: table-row">' +
+        '        <div style="display: table-cell; outline: 1px solid red; width: 1px;">' +
+        '            <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
+        '            <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
+        '            <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
+        '        </div>' +
+        '        <div style="display: table-cell; outline: 1px solid red;">' +
+        '            <button type="button" @click="$emit(\'block-remove\')">x</button>' +
+        '        </div>' +
+        '        <div style="display: table-cell; outline: 1px solid red; width: 1px;">' +
+        '            <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
+        '            <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
+        '            <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
+        '        </div>' +
         '    </div>' +
-        '    <div class="vf-block-center">' +
-        '        <button type="button" @click="$emit(\'block-remove\')">x</button>' +
         '    </div>' +
-        '    <div class="vf-block-right">' +
-        '        <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
-        '        <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
-        '        <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
-        '    </div>' +
-        '</div>' +
-        '    <div class="vf-block-bottom">' +
-        '        <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
-        '        <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
-        '        <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
+        '    <div class="clearfix">' +
+        '            <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
+        '            <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
+        '            <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
         '    </div>' +
         '</div>',
     props: {

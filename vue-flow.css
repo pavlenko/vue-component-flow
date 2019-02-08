@@ -16,13 +16,13 @@
     cursor: move;
     min-width: 100px;
     min-height: 40px;
-    display: table;
 }
 
 .vf-block-top {
     width: 100%;
     outline: 1px solid red;
     display: table-row;
+    column-count: 3;
 }
 .vf-block-middle {
     outline: 1px solid red;
@@ -53,7 +53,7 @@
 }
 
 .vf-port {
-    float: left;
+    /*float: left;*/
     width: 10px;
     height: 10px;
     border: 1px solid black;
