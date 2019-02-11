@@ -2,7 +2,7 @@ Vue.component('vf-paper', {
     template:
         '<div class="vf-paper" :style="style">' +
         '    <svg class="vf-links">' +
-        '        <vf-link v-for="link in _links" :key="link.id"/>' +
+        '        <vf-link v-for="link in _links" :key="link.id" v-bind="link"/>' +
         '    </svg>' +
         '    <vf-block ref="blocks"' +
         '              v-for="block in blocks"' +
@@ -45,7 +45,7 @@ Vue.component('vf-paper', {
         },
         _links: function () {
             //TODO do not use reference to dom elements, calculate coordinates based on config both for blocks & ports
-            console.log(this.$refs.blocks);
+            return [{id: 1, sourceX: 100, sourceY: 100, targetX: 200, targetY: 110}];
         }
     },
     mounted: function () {
@@ -162,6 +162,17 @@ Vue.component('vf-paper', {
             });
 
             this.sceneUpdate()
+        },
+        linkInsert: function (sourceBlock, sourcePort, targetBlock, targetPort) {
+            this.links.push({
+                id: VueFlow.utils.generateUUID(),
+                sourceBlock: sourceBlock,
+                sourcePort: sourcePort,
+                targetBlock: targetBlock,
+                targetPort: targetPort
+            });
+
+            this.sceneUpdate();
         },
         linkRemove: function (linkID) {
             this.links = this.links.filter(function (link) {
