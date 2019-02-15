@@ -1,6 +1,7 @@
 Vue.component('vf-paper', {
     template:
         '<div class="vf-paper" :style="style">' +
+        '    <test-link ref="link" />' +
         '    <svg class="vf-links">' +
         '        <vf-link v-for="link in _links" :key="link.id" v-bind="link"/>' +
         '    </svg>' +
@@ -23,6 +24,15 @@ Vue.component('vf-paper', {
         scene: {
             type: Object,
             default: function () { return {blocks: [], links: []}; }
+        }
+    },
+    components: {
+        'test-link': {
+            data: function(){ return {message: ''} },
+            template: '<div>{{message}}</div>',
+            methods: {
+                setMessage: function(message){ this.message = message; }
+            }
         }
     },
     data: function () {
@@ -59,6 +69,10 @@ Vue.component('vf-paper', {
 
         //this.importBlocksContent()
         this.sceneImport();
+    },
+    updated: function () {
+        console.log(this.$refs);
+        this.$refs.link.setMessage('AAA');
     },
     beforeDestroy: function () {
         document.documentElement.removeEventListener('mousedown', this._onMouseDown, true);
