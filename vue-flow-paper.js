@@ -209,6 +209,8 @@ Vue.component('vf-paper', {
             this.blocks.forEach(function (block) {
                 block.selected = (block.id === blockID);
             });
+
+            this.sceneUpdate();
         },
         blockRemove: function (blockID) {
             this.links.forEach(function (link) {
