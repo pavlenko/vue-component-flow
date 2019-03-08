@@ -14,15 +14,17 @@ Vue.component('vf-link', {
     },
     computed: {
         d: function () {
-            var dist = VueFlow.utils.distance(this.sourceX, this.sourceY, this.targetX, this.targetY) * 0.25;
+            var sx = this.sourceX,
+                sy = this.sourceY,
+                tx = this.targetX,
+                ty = this.targetY;
 
-            return 'M ' + this.sourceX + ', '
-                //+ this.sourceY + ' C ' + (this.sourceX + dist) + ', '
-                + this.sourceY + ', '
-                + (this.targetX - dist) + ', '
-                + this.targetY + ', '
-                + this.targetX + ', '
-                + this.targetY;
+            var x1 = sx,
+                y1 = sy/* + 50*/,
+                x2 = tx,
+                y2 = ty/* - 50*/;
+
+            return 'M ' + sx + ', ' + sy + ' C ' + x1 + ', ' + y1 + ', ' + x2 + ', ' + y2 + ', ' + tx + ', ' + ty;
         },
         a: function () {
             return {

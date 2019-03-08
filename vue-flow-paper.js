@@ -2,7 +2,7 @@ Vue.component('vf-paper', {
     template:
         '<div class="vf-paper" :style="style">' +
         '    <test-link ref="link" />' +
-        '    <svg class="vf-links">' +
+        '    <svg class="vf-links" style="width: 100%; height: 100%">' +
         '        <vf-link v-for="link in _links" :key="link.id" v-bind="link"/>' +
         '    </svg>' +
         '    <vf-block ref="blocks"' +
