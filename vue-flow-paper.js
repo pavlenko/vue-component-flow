@@ -137,8 +137,7 @@ Vue.component('vf-paper', {
             //TODO handle zooming with limits
         },
         // Custom listeners
-        onLinkingStart: function (block, e) {console.log(arguments);
-            //TODO save block, port and cursor data for source
+        onLinkingStart: function (block, e) {//TODO <-- pass block + port
             var position = VueFlow.utils.getCursorPosition(e, this.$el);
 
             this.action.linking = true;
@@ -151,10 +150,7 @@ Vue.component('vf-paper', {
                 targetY: position.y
             };
         },
-        onLinkingStop: function (block) {console.log(arguments);
-            //TODO add temp link to links list if all ok
-            //TODO update scene
-            //TODO reset linking
+        onLinkingStop: function (block) {//TODO <-- pass block + port
             if (this.draggingLink) {
                 /*const newLink = {
                     id: maxID + 1,
@@ -164,28 +160,21 @@ Vue.component('vf-paper', {
 
                 this.scene.links.push(this.draggingLink);
                 this.sceneUpdate();
+                //this.linkInsert();//TODO <-- use this
             }
 
             this.draggingLink = null;
         },
-        onLinkingRemove: function (link) {
-            this.links = this.links.filter(function (item) {
-                return item.id !== link.id;
-            });
-
-            this.sceneUpdate();
-        },
+        onLinkingRemove: function (link) { this.linkRemove(link.id); },
         onBlockSelect: function (block) { this.blockSelect(block.id); },
         onBlockUpdate: function (block) { this.sceneUpdate(); },
         onBlockRemove: function (block) { this.blockRemove(block.id); },
         // Instance methods
         sceneImport: function () {
-            //TODO process blocks & links from scene object to internal blocks & links properties
             this.blocks = this.scene.blocks;
             this.links  = this.scene.links;
         },
         sceneExport: function () {
-            //TODO process blocks & links internal properties to scene object blocks & links
             return {
                 blocks: this.blocks,
                 links:  this.links,
@@ -239,7 +228,9 @@ Vue.component('vf-paper', {
         linkRemove: function (linkID) {
             this.links = this.links.filter(function (link) {
                 return link.id !== linkID;
-            })
+            });
+
+            this.sceneUpdate();
         }
     },
     watch: {
