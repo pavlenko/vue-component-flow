@@ -1,11 +1,9 @@
 Vue.component('vf-block', {
     template:
         '<div class="vf-block" :class="{selected: selected}" :style="style">' +
-        '    <div>' +
+        '    <div v-if="portsTop.length">' +
         '        <div style="display: table; margin: -5px auto 0">' +
-        '            <div style="display: table-cell" class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
-        '            <div style="display: table-cell" class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
-        '            <div style="display: table-cell" class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
+        '            <div v-for="port in portsTop" style="display: table-cell" class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
         '        </div>' +
         '    </div>' +
         '    <div style="display: table; width: 100%">' +
@@ -59,6 +57,11 @@ Vue.component('vf-block', {
     computed: {
         style: function () {
             return {top: this.y + 'px', left: this.x + 'px'};
+        },
+        portsTop: function () {
+            return this.ports.filter(function (port) {
+                return port.group === 'top';
+            })
         }
     },
     mounted: function () {
@@ -72,6 +75,15 @@ Vue.component('vf-block', {
         document.documentElement.removeEventListener('mouseup', this._onMouseUp, true);
     },
     methods: {
+        getPorts: function (group) {
+            if (group) {
+                return this.ports.filter(function (port) {
+                    return port.group === group;
+                })
+            }
+
+            return this.ports;
+        },
         onMouseDown: function (e) {
             //TODO save cursor position
             //TODO resolve dragging/linking
