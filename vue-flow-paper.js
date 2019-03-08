@@ -2,7 +2,7 @@ Vue.component('vf-paper', {
     template:
         '<div class="vf-paper" :style="style">' +
         '    <svg class="vf-links" style="width: 100%; height: 100%">' +
-        '        <vf-link v-for="link in _links" :key="link.id" v-bind="link"/>' +
+        '        <vf-link v-for="link in _links" :key="link.id" v-bind.sync="link" @linking-remove="onLinkingRemove(link)"/>' +
         '    </svg>' +
         '    <vf-block ref="blocks"' +
         '              v-for="block in blocks"' +
@@ -34,7 +34,6 @@ Vue.component('vf-paper', {
             },
             blocks: [],
             links: [],
-            links2: [],
             draggingLink: null
         };
     },
@@ -145,7 +144,7 @@ Vue.component('vf-paper', {
             this.action.linking = true;
 
             this.draggingLink = {
-                id: VueFlow.utils.generateUUID,
+                id:      VueFlow.utils.generateUUID(),
                 sourceX: position.x,
                 sourceY: position.y,
                 targetX: position.x,
@@ -168,6 +167,13 @@ Vue.component('vf-paper', {
             }
 
             this.draggingLink = null;
+        },
+        onLinkingRemove: function (link) {
+            this.links = this.links.filter(function (item) {
+                return item.id !== link.id;
+            });
+
+            this.sceneUpdate();
         },
         onBlockSelect: function (block) { this.blockSelect(block.id); },
         onBlockUpdate: function (block) { this.sceneUpdate(); },

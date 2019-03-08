@@ -2,6 +2,9 @@ Vue.component('vf-link', {
     template:
         '<g>' +
         '    <path :d="d" stroke="#333" stroke-width="1" fill="none" />' +
+        '    <a style="cursor: pointer" @click.prevent="$emit(\'linking-remove\')">' +
+        '        <text text-anchor="middle" :transform="a.transform" font-size="22">&times;</text>' +
+        '    </a>' +
         '    <path d="M -1 -1 L 0 1 L 1 -1 z" stroke="#666" stroke-width="6" stroke-opacity="1" fill="none" :transform="a.transform" />' +
         '</g>',
     props: {
