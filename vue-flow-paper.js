@@ -1,22 +1,26 @@
 Vue.component('vf-paper', {
     template:
-        '<div class="vf-paper" :style="style">' +
-        '    <svg class="vf-links" style="width: 100%; height: 100%">' +
-        '        <vf-link v-for="link in _links" :key="link.id" v-bind.sync="link" @linking-remove="onLinkingRemove(link)"/>' +
-        '    </svg>' +
-        '    <vf-block ref="blocks"' +
-        '              v-for="block in blocks"' +
-        '              :key="block.id"' +
-        '              v-bind.sync="block"' +
-        '              @block-select="onBlockSelect(block)"' +
-        '              @block-update="onBlockUpdate(block)"' +
-        '              @block-remove="onBlockRemove(block)"' +
-        '              @linking-start="onLinkingStart(block, $event)"' +
-        '              @linking-stop="onLinkingStop(block, $event)"' +
-        '    />' +
-        '    <pre>{{ JSON.stringify(draggingLink, null, \'    \') }}</pre>' +
+        '<div class="vf-paper-container" style="width: 100%; overflow: auto; max-height: 500px;">' +
+        '    <div class="vf-paper" :style="style">' +
+        '        <svg class="vf-links" style="width: 100%; height: 100%">' +
+        '            <vf-link v-for="link in _links" :key="link.id" v-bind.sync="link" @linking-remove="onLinkingRemove(link)"/>' +
+        '        </svg>' +
+        '        <vf-block ref="blocks"' +
+        '                  v-for="block in blocks"' +
+        '                  :key="block.id"' +
+        '                  v-bind.sync="block"' +
+        '                  @block-select="onBlockSelect(block)"' +
+        '                  @block-update="onBlockUpdate(block)"' +
+        '                  @block-remove="onBlockRemove(block)"' +
+        '                  @linking-start="onLinkingStart(block, $event)"' +
+        '                  @linking-stop="onLinkingStop(block, $event)"' +
+        '        />' +
+        '        <pre>{{ JSON.stringify(draggingLink, null, \'    \') }}</pre>' +
+        '    </div>' +
         '</div>',
     props: {
+        sizeW: String,
+        sizeH: String,
         gridShow: Boolean,
         gridSize: {type: Number, default: 10, validator: function (value) { return value > 0; }},
         gridColorForeground: {type: String, default: 'rgba(102, 102, 102, 0.2)'},
@@ -39,15 +43,17 @@ Vue.component('vf-paper', {
     },
     computed: {
         style: function () {
+            var style = {width: this.sizeW, height: this.sizeH};
+
             if (!this.gridShow) {
-                return {};
+                return style;
             }
 
-            return {
+            return Object.assign(style, {
                 'background-color': this.gridColorBackground,
                 'background-image': 'linear-gradient(90deg, ' + this.gridColorForeground + ' 1px, transparent 1px), linear-gradient(' + this.gridColorForeground + ' 1px, transparent 1px)',
                 'background-size':  this.gridSize + 'px ' + this.gridSize + 'px',
-            }
+            });
         },
         _links: function () {
             //TODO do not use reference to dom elements, calculate coordinates based on config both for blocks & ports
