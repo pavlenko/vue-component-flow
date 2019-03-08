@@ -27,8 +27,12 @@ Vue.component('vf-link', {
             return 'M ' + sx + ', ' + sy + ' C ' + x1 + ', ' + y1 + ', ' + x2 + ', ' + y2 + ', ' + tx + ', ' + ty;
         },
         a: function () {
+            // caculate arrow rotation
+            var angle = -Math.atan2(this.targetX - this.sourceX, this.targetY - this.sourceY) * 180 / Math.PI;
+            angle = angle < 0 ? angle + 360 : angle;
+
             return {
-                transform: 'translate(' + this.targetX + ', ' + this.targetY + ') rotate(' + this.angle +')'
+                transform: 'translate(' + this.targetX + ', ' + this.targetY + ') rotate(' + angle +')'
             };
         }
     }

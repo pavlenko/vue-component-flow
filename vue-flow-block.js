@@ -119,11 +119,11 @@ Vue.component('vf-block', {
         },
         onPortMouseDown: function (e) {
             this.linking = true;
-            this.$emit('linking-start');
+            this.$emit('linking-start', e);
             if (e.preventDefault) e.preventDefault();
         },
         onPortMouseUp: function (e) {
-            this.$emit('linking-stop');
+            this.$emit('linking-stop', e);
             if (e.preventDefault) e.preventDefault();
         },
     }

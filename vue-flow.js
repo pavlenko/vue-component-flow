@@ -30,8 +30,8 @@ var VueFlow = {
                 var position = VueFlow.utils.getElementPosition(element);
 
                 return {
-                    x: cursorX - position.left,
-                    y: cursorY - position.top
+                    x: cursorX - position.x,
+                    y: cursorY - position.y
                 }
             }
 

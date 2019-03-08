@@ -1,7 +1,6 @@
 Vue.component('vf-paper', {
     template:
         '<div class="vf-paper" :style="style">' +
-        '    <test-link ref="link" />' +
         '    <svg class="vf-links" style="width: 100%; height: 100%">' +
         '        <vf-link v-for="link in _links" :key="link.id" v-bind="link"/>' +
         '    </svg>' +
@@ -15,6 +14,7 @@ Vue.component('vf-paper', {
         '              @linking-start="onLinkingStart(block, $event)"' +
         '              @linking-stop="onLinkingStop(block, $event)"' +
         '    />' +
+        '    <pre>{{ JSON.stringify(draggingLink, null, \'    \') }}</pre>' +
         '</div>',
     props: {
         gridShow: Boolean,
@@ -26,19 +26,16 @@ Vue.component('vf-paper', {
             default: function () { return {blocks: [], links: []}; }
         }
     },
-    components: {
-        'test-link': {
-            data: function(){ return {message: ''} },
-            template: '<div>{{message}}</div>',
-            methods: {
-                setMessage: function(message){ this.message = message; }
-            }
-        }
-    },
     data: function () {
         return {
+            action: {
+                linking: false,
+                dragging: false
+            },
             blocks: [],
             links: [],
+            links2: [],
+            draggingLink: null
         };
     },
     computed: {
@@ -55,7 +52,17 @@ Vue.component('vf-paper', {
         },
         _links: function () {
             //TODO do not use reference to dom elements, calculate coordinates based on config both for blocks & ports
-            return [{id: 1, sourceX: 100, sourceY: 100, targetX: 200, targetY: 110}];
+            var links = [];
+
+            this.scene.links.forEach(function (link) {
+                links.push(link);
+            });
+
+            if (this.draggingLink) {
+                links.push(this.draggingLink);
+            }
+
+            return links;
         }
     },
     mounted: function () {
@@ -70,10 +77,7 @@ Vue.component('vf-paper', {
         //this.importBlocksContent()
         this.sceneImport();
     },
-    updated: function () {
-        console.log(this.$refs);
-        this.$refs.link.setMessage('AAA');
-    },
+    updated: function () {},
     beforeDestroy: function () {
         document.documentElement.removeEventListener('mousedown', this._onMouseDown, true);
         document.documentElement.removeEventListener('mousemove', this._onMouseMove, true);
@@ -108,26 +112,62 @@ Vue.component('vf-paper', {
         onMouseMove: function (e) {
             //TODO update center position via predefined top & left offsets if dragging
             //TODO update link if linking
+
+
+            if (this.action.linking) {
+                var position = VueFlow.utils.getCursorPosition(e, this.$el);
+
+                this.draggingLink.targetX = position.x;
+                this.draggingLink.targetY = position.y;
+            }
         },
         onMouseUp: function (e) {
             //TODO if dragging - update scene & reset dragging
             //TODO if linking - reset linking
+            var target = e.target || e.srcElement;
+
+            if (this.$el.contains(target)) {
+                if (typeof target.className !== 'string' || target.className.indexOf('vf-port') < 0) {
+                    this.draggingLink = null;
+                }
+            }
+
+            this.action.linking = false;
         },
         onMouseWheel: function (e) {
             //TODO handle zooming with limits
         },
         // Custom listeners
-        onLinkingStart: function () {
+        onLinkingStart: function (block, e) {console.log(arguments);
             //TODO save block, port and cursor data for source
+            var position = VueFlow.utils.getCursorPosition(e, this.$el);
+
+            this.action.linking = true;
+
+            this.draggingLink = {
+                id: VueFlow.utils.generateUUID,
+                sourceX: position.x,
+                sourceY: position.y,
+                targetX: position.x,
+                targetY: position.y
+            };
         },
-        onLinkingStop: function () {
+        onLinkingStop: function (block) {console.log(arguments);
             //TODO add temp link to links list if all ok
             //TODO update scene
             //TODO reset linking
-        },
-        onLinkingBreak: function () {
-            //TODO ???... disallow to start linking from inputs
-            //TODO update scene
+            if (this.draggingLink) {
+                /*const newLink = {
+                    id: maxID + 1,
+                    from: this.draggingLink.from,
+                    to: index,
+                };*/
+
+                this.scene.links.push(this.draggingLink);
+                this.sceneUpdate();
+            }
+
+            this.draggingLink = null;
         },
         onBlockSelect: function (block) { this.blockSelect(block.id); },
         onBlockUpdate: function (block) { this.sceneUpdate(); },
