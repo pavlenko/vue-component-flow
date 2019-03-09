@@ -1,7 +1,7 @@
 Vue.component('vf-paper', {
     template:
         '<div class="vf-paper-container" style="width: 100%; overflow: auto; max-height: 500px;">' +
-        '    <div class="vf-paper" :style="style">' +
+        '    <div class="vf-paper" ref="paper" :style="style">' +
         '        <svg class="vf-links" style="width: 100%; height: 100%">' +
         '            <vf-link v-for="link in _links" :key="link.id" v-bind.sync="link" @linking-remove="onLinkingRemove(link)"/>' +
         '        </svg>' +
@@ -34,7 +34,7 @@ Vue.component('vf-paper', {
         return {
             action: {
                 linking: false,
-                dragging: false
+                panning: false
             },
             blocks: [],
             links: [],
@@ -96,12 +96,15 @@ Vue.component('vf-paper', {
             var target = e.target || e.srcElement;
 
             if ((target === this.$el || target.matches('svg, svg *')) && e.which === 1) {
-                //this.dragging = true
+                this.action.panning = true;
 
                 var position = VueFlow.utils.getCursorPosition(e, this.$el);
 
-                this.cursorPositionX = position.left;
-                this.cursorPositionY = position.top;
+                this.cursorPositionX = position.x;
+                this.cursorPositionY = position.y;
+                this.scrollPositionX = this.$el.scrollLeft;
+                this.scrollPositionY = this.$el.scrollTop;
+
                 //let mouse = mouseHelper.getMousePosition(this.$el, e)
                 //this.mouseX = mouse.x
                 //this.mouseY = mouse.y
@@ -116,14 +119,29 @@ Vue.component('vf-paper', {
         },
         onMouseMove: function (e) {
             //TODO update center position via predefined top & left offsets if dragging
-            //TODO update link if linking
-
-
             if (this.action.linking) {
                 var position = VueFlow.utils.getCursorPosition(e, this.$el);
 
                 this.draggingLink.targetX = position.x;
                 this.draggingLink.targetY = position.y;
+            }
+
+            if (this.action.panning) {
+                var position = VueFlow.utils.getCursorPosition(e, this.$el);
+                var scrollX  = this.scrollPositionX + (this.cursorPositionX - position.x);
+                var scrollY  = this.scrollPositionY + (this.cursorPositionY - position.y);
+
+                if (scrollX < 0 || scrollX > this.$el.scrollWidth - this.$el.clientWidth) {
+                    this.cursorPositionX = position.x;
+                } else {
+                    this.$el.scrollLeft = scrollX;
+                }
+
+                if (scrollY < 0 || scrollY > this.$el.scrollHeight - this.$el.clientHeight) {
+                    this.cursorPositionY = position.y
+                } else {
+                    this.$el.scrollTop = scrollY;
+                }
             }
         },
         onMouseUp: function (e) {
@@ -138,6 +156,7 @@ Vue.component('vf-paper', {
             }
 
             this.action.linking = false;
+            this.action.panning = false;
         },
         onMouseWheel: function (e) {
             //TODO handle zooming with limits
