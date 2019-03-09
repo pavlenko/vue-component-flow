@@ -12,7 +12,7 @@ Vue.component('vf-paper', {
         '                  @block-select="onBlockSelect(block)"' +
         '                  @block-update="onBlockUpdate(block)"' +
         '                  @block-remove="onBlockRemove(block)"' +
-        '                  @linking-start="onLinkingStart(block, $event)"' +
+        '                  @linking-start="onLinkingStart"' +
         '                  @linking-stop="onLinkingStop(block, $event)"' +
         '        />' +
         '        <pre>{{ JSON.stringify(draggingLink, null, \'    \') }}</pre>' +
@@ -162,10 +162,12 @@ Vue.component('vf-paper', {
             //TODO handle zooming with limits
         },
         // Custom listeners
-        onLinkingStart: function (block, e) {//TODO <-- pass block + port
+        onLinkingStart: function (e, blockID, port) {
             var position = VueFlow.utils.getCursorPosition(e, this.$el);
 
             this.action.linking = true;
+
+            console.log(this.$refs.blocks[0].$refs);//TODO maybe pass elements ref for calculate coordinates in child view
 
             this.draggingLink = {
                 id:      VueFlow.utils.generateUUID(),

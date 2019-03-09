@@ -3,35 +3,44 @@ Vue.component('vf-block', {
         '<div class="vf-block" :class="{selected: selected}" :style="style">' +
         '    <div v-if="portsTop.length">' +
         '        <div style="display: table; margin: -5px auto 0">' +
-        '            <div v-for="port in portsTop" style="display: table-cell" class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
+        '            <div ref="ports" v-for="port in _ports.top"' +
+        '                 style="display: table-cell"' +
+        '                 class="vf-port"' +
+        '                 @mousedown="onPortMouseDown($event, id, port)"' +
+        '                 @mouseup="onPortMouseUp($event, id, port)"></div>' +
         '        </div>' +
         '    </div>' +
         '    <div style="display: table; width: 100%">' +
         '    <div style="display: table-row">' +
         '        <div style="display: table-cell; outline: 1px solid red; width: 1px; margin-left: -5px">' +
-        '            <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
-        '            <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
-        '            <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
+        '            <div ref="ports" v-for="port in _ports.left"' +
+        '                 class="vf-port"' +
+        '                 @mousedown="onPortMouseDown($event, id, port)"' +
+        '                 @mouseup="onPortMouseUp($event, id, port)"></div>' +
         '        </div>' +
         '        <div style="display: table-cell; outline: 1px solid red;">' +
         '            <button type="button" @click="$emit(\'block-remove\')">x</button>' +
         '        </div>' +
         '        <div style="display: table-cell; outline: 1px solid red; width: 1px; margin-right: -5px">' +
-        '            <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
-        '            <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
-        '            <div class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
+        '            <div ref="ports" v-for="port in _ports.right"' +
+        '                 class="vf-port"' +
+        '                 @mousedown="onPortMouseDown($event, id, port)"' +
+        '                 @mouseup="onPortMouseUp($event, id, port)"></div>' +
         '        </div>' +
         '    </div>' +
         '    </div>' +
         '    <div>' +
         '        <div style="display: table; margin: 0 auto -5px">' +
-        '            <div style="display: table-cell" class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
-        '            <div style="display: table-cell" class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
-        '            <div style="display: table-cell" class="vf-port" @mousedown="onPortMouseDown($event)" @mouseup="onPortMouseUp($event)"></div>' +
+        '            <div ref="ports" v-for="port in _ports.bottom"' +
+        '                 style="display: table-cell"' +
+        '                 class="vf-port"' +
+        '                 @mousedown="onPortMouseDown($event, id, port)"' +
+        '                 @mouseup="onPortMouseUp($event, id, port)"></div>' +
         '        </div>' +
         '    </div>' +
         '</div>',
     props: {
+        id: String,
         x: Number,
         y: Number,
         selected: Boolean
@@ -58,9 +67,40 @@ Vue.component('vf-block', {
         style: function () {
             return {top: this.y + 'px', left: this.x + 'px'};
         },
+        _ports: function () {
+            return {
+                top: this.ports.filter(function (port) {
+                    return port.group === 'top';
+                }),
+                right: this.ports.filter(function (port) {
+                    return port.group === 'right';
+                }),
+                bottom: this.ports.filter(function (port) {
+                    return port.group === 'bottom';
+                }),
+                left: this.ports.filter(function (port) {
+                    return port.group === 'left';
+                })
+            };
+        },
         portsTop: function () {
             return this.ports.filter(function (port) {
                 return port.group === 'top';
+            })
+        },
+        portsRight: function () {
+            return this.ports.filter(function (port) {
+                return port.group === 'right';
+            })
+        },
+        portsBottom: function () {
+            return this.ports.filter(function (port) {
+                return port.group === 'bottom';
+            })
+        },
+        portsLeft: function () {
+            return this.ports.filter(function (port) {
+                return port.group === 'left';
             })
         }
     },
@@ -129,9 +169,9 @@ Vue.component('vf-block', {
                 this.linking = false
             }
         },
-        onPortMouseDown: function (e) {
+        onPortMouseDown: function (e, port) {
             this.linking = true;
-            this.$emit('linking-start', e);
+            this.$emit('linking-start', e, port);
             if (e.preventDefault) e.preventDefault();
         },
         onPortMouseUp: function (e) {
