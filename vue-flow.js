@@ -25,21 +25,28 @@ var VueFlow = {
                 return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
             });
         },
-        getElementPosition2: function (element, parent) {
-            var rect1 = element.getBoundingClientRect();
+        getElementBounding: function (element, parent) {
+            var offsetX = window.pageXOffset;
+            var offsetY = window.pageYOffset;
+
+            var bounding1 = element.getBoundingClientRect();
 
             if (parent) {
-                var rect2 = parent.getBoundingClientRect();
+                var bounding2 = parent.getBoundingClientRect();
 
                 return {
-                    y: Math.round((rect1.top - rect2.top) + window.pageYOffset),
-                    x: Math.round((rect1.left - rect2.left) + window.pageXOffset)
+                    x0: Math.round(bounding1.left - bounding2.left + offsetX),
+                    y0: Math.round(bounding1.top - bounding2.top + offsetY),
+                    x1: Math.round(bounding1.right - bounding2.left + offsetX),
+                    y1: Math.round(bounding1.bottom - bounding2.top + offsetY),
                 }
-            }
-
-            return {
-                y: Math.round(rect1.top + window.pageYOffset),
-                x: Math.round(rect1.left + window.pageXOffset)
+            } else {
+                return {
+                    x0: Math.round(bounding1.left + offsetX),
+                    y0: Math.round(bounding1.top + offsetY),
+                    x1: Math.round(bounding1.right + offsetX),
+                    y1: Math.round(bounding1.bottom + offsetY),
+                }
             }
         },
         getElementPosition: function (element) {

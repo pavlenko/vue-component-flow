@@ -2,8 +2,8 @@ Vue.component('vf-link', {
     template:
         '<g>' +
         '    <path :d="d" stroke="#333" stroke-width="1" fill="none" />' +
-        '    <a style="cursor: pointer" @click.prevent="$emit(\'linking-remove\')">' +
-        '        <text text-anchor="middle" :transform="a.transform" font-size="22">&times;</text>' +
+        '    <a style="cursor: pointer" :transform="a.transform" @click.prevent="$emit(\'linking-remove\')">' +
+        '        <text text-anchor="middle" font-size="22">&times;</text>' +
         '    </a>' +
         '    <path d="M -1 -1 L 0 1 L 1 -1 z" stroke="#666" stroke-width="6" stroke-opacity="1" fill="none" :transform="a.transform" />' +
         '</g>',
@@ -12,8 +12,7 @@ Vue.component('vf-link', {
         sourceX: Number,
         sourceY: Number,
         targetX: Number,
-        targetY: Number,
-        angle: {type: Number, default: -90}
+        targetY: Number
     },
     computed: {
         d: function () {
@@ -35,7 +34,8 @@ Vue.component('vf-link', {
             angle = angle < 0 ? angle + 360 : angle;
 
             return {
-                transform: 'translate(' + this.targetX + ', ' + this.targetY + ') rotate(' + angle +')'
+                // subtract half of stroke width for prevent arrow overlay
+                transform: 'translate(' + (this.targetX - 6) + ', ' + (this.targetY) + ') rotate(' + angle +')'
             };
         }
     }

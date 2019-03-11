@@ -3,42 +3,39 @@ Vue.component('vf-block', {
         '<div class="vf-block" :class="{selected: selected}" :style="style" @mousedown="$emit(\'block-select\');">' +
         '    <div v-if="_ports.top.length">' +
         '        <div style="display: table; margin: -5px auto 0">' +
-        '            <div ref="ports"' +
-        '                 v-for="port in _ports.top"' +
+        '            <div v-for="port in _ports.top"' +
         '                 :key="port.id"' +
         '                 :title="port.id"' +
-        '                 v-bind.sync="port"' +
+        //'                 v-bind.sync="port"' +
         '                 style="display: table-cell"' +
-        '                 class="vf-port"' +
+        //'                 class="vf-port"' +
         '                 @mousedown="onPortMouseDown($event, id, port.id)"' +
-        '                 @mouseup="onPortMouseUp($event, id, port.id)"></div>' +
+        '                 @mouseup="onPortMouseUp($event, id, port.id)"><v-flow-port ref="ports" :key="port.id" v-bind.sync="port"/></div>' +
         '        </div>' +
         '    </div>' +
         '    <div style=" margin: 0 -5px;">' +
         '        <div style="display: table; width: 100%;">' +
         '            <div style="display: table-row;">' +
-        '                <div v-if="_ports.left.length" style="display: table-cell; outline: 1px solid red; width: 1px">' +
-        '                    <div ref="ports"' +
-        '                         v-for="port in _ports.left"' +
+        '                <div v-if="_ports.left.length" style="display: table-cell; width: 1px">' +
+        '                    <div v-for="port in _ports.left"' +
         '                         :key="port.id"' +
         '                         :title="port.id"' +
-        '                         v-bind.sync="port"' +
-        '                         class="vf-port"' +
+        //'                         v-bind.sync="port"' +
+        //'                         class="vf-port"' +
         '                         @mousedown="onPortMouseDown($event, id, port.id)"' +
-        '                         @mouseup="onPortMouseUp($event, id, port.id)"></div>' +
+        '                         @mouseup="onPortMouseUp($event, id, port.id)"><v-flow-port ref="ports" :key="port.id" v-bind.sync="port"/></div>' +
         '                </div>' +
-        '                <div style="display: table-cell; outline: 1px solid red;">' +
+        '                <div style="display: table-cell;">' +
         '                    <button type="button" @click="$emit(\'block-remove\')">x</button>' +
         '                </div>' +
-        '                <div v-if="_ports.right.length" style="display: table-cell; outline: 1px solid red; width: 1px">' +
-        '                    <div ref="ports"' +
-        '                         v-for="port in _ports.right"' +
+        '                <div v-if="_ports.right.length" style="display: table-cell; width: 1px">' +
+        '                    <div v-for="port in _ports.right"' +
         '                         :key="port.id"' +
         '                         :title="port.id"' +
-        '                         v-bind.sync="port"' +
-        '                         class="vf-port"' +
+        //'                         v-bind.sync="port"' +
+        //'                         class="vf-port"' +
         '                         @mousedown="onPortMouseDown($event, id, port.id)"' +
-        '                         @mouseup="onPortMouseUp($event, id, port.id)"></div>' +
+        '                         @mouseup="onPortMouseUp($event, id, port.id)"><v-flow-port ref="ports" :key="port.id" v-bind.sync="port"/></div>' +
         '                </div>' +
         '            </div>' +
         '        </div>' +
@@ -52,7 +49,9 @@ Vue.component('vf-block', {
         '                 style="display: table-cell"' +
         //'                 class="vf-port"' +
         '                 @mousedown="onPortMouseDown($event, id, port.id)"' +
-        '                 @mouseup="onPortMouseUp($event, id, port.id)"><v-flow-port ref="ports"/></div>' +
+        '                 @mouseup="onPortMouseUp($event, id, port.id)">' +
+        '                <v-flow-port ref="ports" v-bind.sync="port" />' +
+        '            </div>' +
         '        </div>' +
         '    </div>' +
         '</div>',
@@ -104,5 +103,9 @@ Vue.component('vf-block', {
             this.$emit('linking-stop', e, id, portID);
             if (e.preventDefault) e.preventDefault();
         },
+        portSearch: function (portID) {
+            return this.$refs.ports.find(function (port) { return port.id === portID; });
+        },
+        portInsert: function () {}
     }
 });

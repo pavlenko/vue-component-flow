@@ -20,35 +20,28 @@
 
 .vf-block-top {
     width: 100%;
-    outline: 1px solid red;
     display: table-row;
     column-count: 3;
 }
 .vf-block-middle {
-    outline: 1px solid red;
     display: table-row;
 }
 .vf-block-left {
     width: 1px;
-    outline: 1px solid red;
     display: table-cell;
 }
 .vf-block-center {
-    outline: 1px solid red;
     display: table-cell;
 }
 .vf-block-right {
     width: 1px;
-    outline: 1px solid red;
     display: table-cell;
 }
 .vf-block-bottom {
-    outline: 1px solid red;
     display: table-row;
 }
 
 .vf-block.selected {
-    border: 1px solid red;
     z-index: 2;
 }
 
