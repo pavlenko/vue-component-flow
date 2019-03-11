@@ -172,7 +172,7 @@ Vue.component('v-flow-port', {
 
 Vue.component('v-flow-block', {
     template:
-        '<div class="vf-block" :class="{selected: selected}" :style="style" @mousedown="$emit(\'block-select\');">' +
+        '<div class="v-flow-block" :class="{selected: selected}" :style="style" @mousedown="$emit(\'block-select\');">' +
         '    <div class="v-flow-block-ports-top" v-if="_ports.top.length">' +
         '        <div class="v-flow-block-port" v-for="port in _ports.top" :key="port.id">' +
         '            <v-flow-port ref="ports"' +
@@ -263,11 +263,11 @@ Vue.component('v-flow-block', {
     }
 });
 
-Vue.component('vf-paper', {
+Vue.component('v-flow-paper', {
     template:
-        '<div class="vf-paper-container" style="width: 100%; overflow: auto; max-height: 500px;">' +
-        '    <div class="vf-paper" ref="paper" :style="style">' +
-        '        <svg class="vf-links" style="width: 100%; height: 100%">' +
+        '<div class="v-flow-paper-container" :style="styles.wrapper">' +
+        '    <div class="v-flow-paper" ref="paper" :style="styles.paper">' +
+        '        <svg class="v-flow-links">' +
         '            <v-flow-line v-for="link in lines" :key="link.id" v-bind.sync="link" @linking-remove="onLinkingRemove(link)"/>' +
         '        </svg>' +
         '        <v-flow-block ref="blocks"' +
@@ -280,12 +280,13 @@ Vue.component('vf-paper', {
         '                      @linking-start="onLinkingStart"' +
         '                      @linking-stop="onLinkingStop"' +
         '        />' +
-        '        <pre>{{ JSON.stringify(draggingLink, null, \'    \') }}</pre>' +
         '    </div>' +
         '</div>',
     props: {
-        sizeW: String,
-        sizeH: String,
+        sizeW:    {type: String, default: '2000px'},
+        sizeH:    {type: String, default: '1000px'},
+        maxW:     {type: String, default: '100%'},
+        maxH:     {type: String, default: '400px'},
         gridShow: Boolean,
         gridSize: {type: Number, default: 10, validator: function (value) { return value > 0; }},
         gridColorForeground: {type: String, default: 'rgba(102, 102, 102, 0.2)'},
@@ -309,18 +310,24 @@ Vue.component('vf-paper', {
         };
     },
     computed: {
-        style: function () {
-            var style = {width: this.sizeW, height: this.sizeH};
+        styles: function () {
+            var paperStyle = {'width': this.sizeW, 'height': this.sizeH};
 
-            if (!this.gridShow) {
-                return style;
+            if (this.gridShow) {
+                Object.assign(paperStyle, {
+                    'background-color': this.gridColorBackground,
+                    'background-image': 'linear-gradient(90deg, ' + this.gridColorForeground + ' 1px, transparent 1px), linear-gradient(' + this.gridColorForeground + ' 1px, transparent 1px)',
+                    'background-size':  this.gridSize + 'px ' + this.gridSize + 'px',
+                });
             }
 
-            return Object.assign(style, {
-                'background-color': this.gridColorBackground,
-                'background-image': 'linear-gradient(90deg, ' + this.gridColorForeground + ' 1px, transparent 1px), linear-gradient(' + this.gridColorForeground + ' 1px, transparent 1px)',
-                'background-size':  this.gridSize + 'px ' + this.gridSize + 'px',
-            });
+            return {
+                wrapper: {
+                    'max-width':  this.maxW,
+                    'max-height': this.maxH
+                },
+                paper: paperStyle
+            };
         },
         lines: function () {
             var lines = this.scene.links.map(function (link) {
