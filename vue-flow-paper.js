@@ -57,6 +57,7 @@ Vue.component('vf-paper', {
             });
         },
         _links: function () {
+            console.log('AAA');
             //TODO do not use reference to dom elements, calculate coordinates based on config both for blocks & ports
             var links = [];
 
@@ -113,8 +114,8 @@ Vue.component('vf-paper', {
         onMouseMove: function (e) {
             var position = VueFlow.utils.getCursorPosition(e, this.$el);
 
-            if (this.action.dragging) {
-                var index = this.scene.blocks.findIndex(function (block) {
+            if (this.action.dragging && !this.action.linking) {
+                var index = this.blocks.findIndex(function (block) {
                     return block.id === this.action.dragging;
                 }.bind(this));
 
@@ -122,7 +123,9 @@ Vue.component('vf-paper', {
                     var newX = VueFlow.utils.snapTo(position.x - this.cursorOffsetX + this.scrollPositionX, this.gridSize);
                     var newY = VueFlow.utils.snapTo(position.y - this.cursorOffsetY + this.scrollPositionY, this.gridSize);
 
-                    this.$set(this.scene.blocks, index, Object.assign(this.scene.blocks[index], {x: newX, y: newY}));
+                    this.$set(this.blocks, index, Object.assign(this.blocks[index], {x: newX, y: newY}));
+
+                    this.sceneUpdate();
                 }
             }
 
@@ -226,10 +229,11 @@ Vue.component('vf-paper', {
 
             var index = this.blocks.findIndex(function (block) { return block.id === blockID; });
             if (index >= 0) {
-                var position = VueFlow.utils.getElementPosition(this.$refs.blocks[index].$el);
+                var position1 = VueFlow.utils.getElementPosition(this.$refs.blocks[index].$el);
+                var position2 = VueFlow.utils.getElementPosition(this.$el);
 
-                this.cursorOffsetX = Math.abs(this.cursorPositionX - position.x);
-                this.cursorOffsetY = Math.abs(this.cursorPositionY - position.y);
+                this.cursorOffsetX = Math.abs(this.cursorPositionX - position2.x - position1.x);
+                this.cursorOffsetY = Math.abs(this.cursorPositionY - position2.y - position1.y);
             }
 
             this.blocks.forEach(function (block) {
