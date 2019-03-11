@@ -129,7 +129,7 @@ Vue.component('vf-paper', {
                 }
             }
 
-            if (this.action.linking) {
+            if (this.action.linking && this.draggingLink) {
                 this.draggingLink.targetX = position.x;
                 this.draggingLink.targetY = position.y;
             }
@@ -166,20 +166,51 @@ Vue.component('vf-paper', {
         },
         onMouseWheel: function (e) {},
         // Custom listeners
-        onLinkingStart: function (e, blockID, port) {
-            var position = VueFlow.utils.getCursorPosition(e, this.$el);
-
+        onLinkingStart: function (e, blockID, portID) {
             this.action.linking = true;
 
-            console.log(this.$refs.blocks[0].$refs);//TODO maybe pass elements ref for calculate coordinates in child view
+            var blockI = this.blocks.findIndex(function (block) { return block.id === blockID; });
+            if (blockI >= 0) {
+                var portI = this.blocks[blockI].ports.findIndex(function (port) { return port.id === portID; });
+                if (portI >= 0 && this.blocks[blockI].ports[portI].type !== VueFlow.portTypes.TYPE_I) {
+                    var rect1 = VueFlow.utils.getElementPosition2(this.$el);
+                    var rect2 = VueFlow.utils.getElementPosition2(this.$refs.blocks[blockI].$refs.ports[portI], this.$el);
 
-            this.draggingLink = {
-                id:      VueFlow.utils.generateUUID(),
-                sourceX: position.x,
-                sourceY: position.y,
-                targetX: position.x,
-                targetY: position.y
-            };
+                    //TODO how to find ref element by index in data objects
+
+                    var x, y;
+                    switch (this.blocks[blockI].ports[portI].edge) {
+                        case VueFlow.portEdges.EDGE_TOP:
+                            x = rect2.left + ((rect2.right - rect2.left) / 2) - rect1.left;
+                            y = rect2.top - rect1.top;
+                            break;
+                        case VueFlow.portEdges.EDGE_RIGHT:
+                            x = rect2.right - rect1.left;
+                            y = rect2.top + ((rect2.bottom - rect2.top) / 2) - rect1.top;
+                            break;
+                        case VueFlow.portEdges.EDGE_BOTTOM:
+                            x = rect2.left + ((rect2.right - rect2.left) / 2) - rect1.left;
+                            y = rect2.bottom - rect1.top;
+                            break;
+                        case VueFlow.portEdges.EDGE_LEFT:
+                            x = rect2.left - rect1.left;
+                            y = rect2.top + ((rect2.bottom - rect2.top) / 2) - rect1.top;
+                            break;
+                    }
+
+                    this.draggingLink = {
+                        id:          VueFlow.utils.generateUUID(),
+                        sourceX:     x,
+                        sourceY:     y,
+                        targetX:     x,
+                        targetY:     y,
+                        sourceBlock: blockID,
+                        sourcePort:  portID,
+                        targetBlock: null,
+                        targetPort:  null
+                    };
+                }
+            }
         },
         onLinkingStop: function (block) {//TODO <-- pass block + port
             if (this.draggingLink) {
@@ -272,6 +303,9 @@ Vue.component('vf-paper', {
             });
 
             this.sceneUpdate();
+        },
+        getPortEdgePosition: function (blockI, portI) {
+            if (this.$refs.blocks[blockI].$refs.ports[portI] && this.$refs.blocks[blockI].$refs.ports[portI]) {}
         }
     },
     watch: {

@@ -1,4 +1,15 @@
 var VueFlow = {
+    portEdges: {
+        EDGE_TOP:    'top',
+        EDGE_RIGHT:  'right',
+        EDGE_BOTTOM: 'bottom',
+        EDGE_LEFT:   'left',
+    },
+    portTypes: {
+        TYPE_I:  'i',
+        TYPE_O:  'o',
+        TYPE_IO: 'io'
+    },
     components: {},
     utils: {
         snapTo: function (value, snap) { return Math.round(Math.round(value / snap) * snap); },
@@ -13,6 +24,23 @@ var VueFlow = {
                 date = Math.floor(date / 16);
                 return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
             });
+        },
+        getElementPosition2: function (element, parent) {
+            var rect1 = element.getBoundingClientRect();
+
+            if (parent) {
+                var rect2 = parent.getBoundingClientRect();
+
+                return {
+                    y: Math.round((rect1.top - rect2.top) + window.pageYOffset),
+                    x: Math.round((rect1.left - rect2.left) + window.pageXOffset)
+                }
+            }
+
+            return {
+                y: Math.round(rect1.top + window.pageYOffset),
+                x: Math.round(rect1.left + window.pageXOffset)
+            }
         },
         getElementPosition: function (element) {
             var rect = element.getBoundingClientRect();

@@ -21,13 +21,43 @@
 <script src="vue-flow-link.js"></script>
 <script src="vue-flow-paper.js"></script>
 <script>
+    var ports1 = [
+        {id: 'p-1', edge: VueFlow.portEdges.EDGE_TOP, type: VueFlow.portTypes.TYPE_I},
+        {id: 'p-2', edge: VueFlow.portEdges.EDGE_TOP, type: VueFlow.portTypes.TYPE_I},
+        {id: 'p-3', edge: VueFlow.portEdges.EDGE_TOP, type: VueFlow.portTypes.TYPE_I},
+        {id: 'p-4', edge: VueFlow.portEdges.EDGE_LEFT, type: VueFlow.portTypes.TYPE_I},
+        {id: 'p-5', edge: VueFlow.portEdges.EDGE_LEFT, type: VueFlow.portTypes.TYPE_I},
+        {id: 'p-6', edge: VueFlow.portEdges.EDGE_LEFT, type: VueFlow.portTypes.TYPE_I},
+        {id: 'p-7', edge: VueFlow.portEdges.EDGE_BOTTOM, type: VueFlow.portTypes.TYPE_O},
+        {id: 'p-8', edge: VueFlow.portEdges.EDGE_BOTTOM, type: VueFlow.portTypes.TYPE_O},
+        {id: 'p-9', edge: VueFlow.portEdges.EDGE_BOTTOM, type: VueFlow.portTypes.TYPE_O},
+        {id: 'p-10', edge: VueFlow.portEdges.EDGE_RIGHT, type: VueFlow.portTypes.TYPE_O},
+        {id: 'p-11', edge: VueFlow.portEdges.EDGE_RIGHT, type: VueFlow.portTypes.TYPE_O},
+        {id: 'p-12', edge: VueFlow.portEdges.EDGE_RIGHT, type: VueFlow.portTypes.TYPE_O},
+    ];
+
+    var ports2 = [
+        {id: 'p-13', edge: VueFlow.portEdges.EDGE_TOP, type: VueFlow.portTypes.TYPE_I},
+        {id: 'p-14', edge: VueFlow.portEdges.EDGE_TOP, type: VueFlow.portTypes.TYPE_I},
+        {id: 'p-15', edge: VueFlow.portEdges.EDGE_TOP, type: VueFlow.portTypes.TYPE_I},
+        {id: 'p-16', edge: VueFlow.portEdges.EDGE_LEFT, type: VueFlow.portTypes.TYPE_I},
+        {id: 'p-17', edge: VueFlow.portEdges.EDGE_LEFT, type: VueFlow.portTypes.TYPE_I},
+        {id: 'p-18', edge: VueFlow.portEdges.EDGE_LEFT, type: VueFlow.portTypes.TYPE_I},
+        {id: 'p-19', edge: VueFlow.portEdges.EDGE_BOTTOM, type: VueFlow.portTypes.TYPE_O},
+        {id: 'p-20', edge: VueFlow.portEdges.EDGE_BOTTOM, type: VueFlow.portTypes.TYPE_O},
+        {id: 'p-21', edge: VueFlow.portEdges.EDGE_BOTTOM, type: VueFlow.portTypes.TYPE_O},
+        {id: 'p-22', edge: VueFlow.portEdges.EDGE_RIGHT, type: VueFlow.portTypes.TYPE_O},
+        {id: 'p-23', edge: VueFlow.portEdges.EDGE_RIGHT, type: VueFlow.portTypes.TYPE_O},
+        {id: 'p-24', edge: VueFlow.portEdges.EDGE_RIGHT, type: VueFlow.portTypes.TYPE_O},
+    ];
+
     new Vue({
         el: '#app',
         data: {
             scene: {
                 blocks: [
-                    {id: 'b-1', x: 10, y: 10, outputs: [{id: 'p-1'}]},
-                    {id: 'b-2', x: 260, y: 10, inputs: [{id: 'p-2'}]}
+                    {id: 'b-1', x: 10, y: 10, ports: ports1},
+                    {id: 'b-2', x: 260, y: 10, ports: ports2}
                 ],
                 links: [
                     //{id: 'l-1', sourceBlock: 'b-1', sourcePort: 'p-1', targetBlock: 'b-2', targetPort: 'p-2'}
