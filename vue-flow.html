@@ -18,7 +18,7 @@
 <script src="bower_components/vue/dist/vue.min.js"></script>
 <script src="vue-flow.js"></script>
 <script src="vue-flow-block.js"></script>
-<script src="vue-flow-link.js"></script>
+<script src="vue-flow-line.js"></script>
 <script src="vue-flow-paper.js"></script>
 <script>
     var ports1 = [
@@ -60,7 +60,13 @@
                     {id: 'b-2', x: 260, y: 10, ports: ports2}
                 ],
                 links: [
-                    //{id: 'l-1', sourceBlock: 'b-1', sourcePort: 'p-1', targetBlock: 'b-2', targetPort: 'p-2'}
+                    {
+                        "id": "l-1",
+                        "sourceBlock": "b-1",
+                        "sourcePort": "p-12",
+                        "targetBlock": "b-2",
+                        "targetPort": "p-18"
+                    }
                 ]
             }
         },

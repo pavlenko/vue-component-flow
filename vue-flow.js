@@ -25,6 +25,31 @@ var VueFlow = {
                 return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
             });
         },
+        getEdgeCenter: function (element, edge, parent) {
+            var bounding = VueFlow.utils.getElementBounding(element, parent);
+
+            var x = null, y = null;
+            switch (edge) {
+                case VueFlow.portEdges.EDGE_TOP:
+                    x = bounding.x0 + ((bounding.x1 - bounding.x0) / 2);
+                    y = bounding.y0;
+                    break;
+                case VueFlow.portEdges.EDGE_RIGHT:
+                    x = bounding.x1;
+                    y = bounding.y0 + ((bounding.y1 - bounding.y0) / 2);
+                    break;
+                case VueFlow.portEdges.EDGE_BOTTOM:
+                    x = bounding.x0 + ((bounding.x1 - bounding.x0) / 2);
+                    y = bounding.y1;
+                    break;
+                case VueFlow.portEdges.EDGE_LEFT:
+                    x = bounding.x0;
+                    y = bounding.y0 + ((bounding.y1 - bounding.y0) / 2);
+                    break;
+            }
+
+            return {x: x, y: y};
+        },
         getElementBounding: function (element, parent) {
             var offsetX = window.pageXOffset;
             var offsetY = window.pageYOffset;

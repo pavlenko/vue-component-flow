@@ -45,11 +45,42 @@
     z-index: 2;
 }
 
-.vf-port {
-    /*float: left;*/
+.v-flow-block-content {
+    display: table-cell;
+    vertical-align: top;
+}
+
+.v-flow-block-ports-vertical {
+    display: table-cell;
+    width: 1px;
+}
+
+.v-flow-port {
     width: 10px;
     height: 10px;
     border: 1px solid black;
     border-radius: 50%;
     background: #fff;
+}
+
+.v-flow-port.v-flow-port-top,
+.v-flow-port.v-flow-port-bottom {
+    margin: 0 5px;
+}
+
+.v-flow-port.v-flow-port-left,
+.v-flow-port.v-flow-port-right {
+    margin: 0 0 10px;
+}
+
+.v-flow-line a,
+.v-flow-line a:hover {
+    cursor: pointer;
+    text-decoration: none;
+    width: 16px;
+    height: 16px;
+    fill-opacity: 1;
+    fill: red;
+    stroke: red;
+    stroke-width: 1px;
 }

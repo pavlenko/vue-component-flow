@@ -3,7 +3,7 @@ Vue.component('vf-paper', {
         '<div class="vf-paper-container" style="width: 100%; overflow: auto; max-height: 500px;">' +
         '    <div class="vf-paper" ref="paper" :style="style">' +
         '        <svg class="vf-links" style="width: 100%; height: 100%">' +
-        '            <vf-link v-for="link in _links" :key="link.id" v-bind.sync="link" @linking-remove="onLinkingRemove(link)"/>' +
+        '            <v-flow-line v-for="link in lines" :key="link.id" v-bind.sync="link" @linking-remove="onLinkingRemove(link)"/>' +
         '        </svg>' +
         '        <vf-block ref="blocks"' +
         '                  v-for="block in blocks"' +
@@ -32,6 +32,7 @@ Vue.component('vf-paper', {
     },
     data: function () {
         return {
+            initialized: false,
             action: {
                 dragging: null,
                 linking:  false,
@@ -56,20 +57,45 @@ Vue.component('vf-paper', {
                 'background-size':  this.gridSize + 'px ' + this.gridSize + 'px',
             });
         },
-        _links: function () {
-            console.log('AAA');
-            //TODO do not use reference to dom elements, calculate coordinates based on config both for blocks & ports
-            var links = [];
+        lines: function () {
+            var lines = this.scene.links.map(function (link) {
+                var sourceBlock = this.blockSearch(link.sourceBlock);
+                var targetBlock = this.blockSearch(link.targetBlock);
 
-            this.scene.links.forEach(function (link) {
-                links.push(link);
-            });
+                if (sourceBlock && targetBlock) {
+                    var sourcePort = sourceBlock.portSearch(link.sourcePort);
+                    var targetPort = targetBlock.portSearch(link.targetPort);
+
+                    if (sourcePort && targetPort) {
+                        var sourcePosition = VueFlow.utils.getEdgeCenter(sourcePort.$el, sourcePort.edge, this.$el);
+                        var targetPosition = VueFlow.utils.getEdgeCenter(targetPort.$el, targetPort.edge, this.$el);
+
+                        return {
+                            id:      link.id,
+                            sourceX: sourcePosition.x,
+                            sourceY: sourcePosition.y,
+                            targetX: targetPosition.x,
+                            targetY: targetPosition.y,
+                        };
+                    }
+                }
+
+                return null;
+            }.bind(this));
+
+            lines = lines.filter(function (line) { return line !== null; });
 
             if (this.draggingLink) {
-                links.push(this.draggingLink);
+                lines.push({
+                    id:      this.draggingLink.id,
+                    sourceX: this.draggingLink.sourceX,
+                    sourceY: this.draggingLink.sourceY,
+                    targetX: this.draggingLink.targetX,
+                    targetY: this.draggingLink.targetY,
+                });
             }
 
-            return links;
+            return lines;
         }
     },
     mounted: function () {
@@ -78,13 +104,16 @@ Vue.component('vf-paper', {
         document.documentElement.addEventListener('mouseup', this._onMouseUp = this.onMouseUp.bind(this), true);
         document.documentElement.addEventListener('wheel', this._onMouseWheel = this.onMouseWheel.bind(this), true);
 
-        //this.centerX = this.$el.clientWidth / 2;
-        //this.centerY = this.$el.clientHeight / 2;
-
-        //this.importBlocksContent()
         this.sceneImport();
     },
-    updated: function () {},
+    updated: function () {
+        if (!this.initialized) {
+            this.$nextTick(function () {
+                this.initialized = true;
+                this.sceneUpdate();
+            }.bind(this));
+        }
+    },
     beforeDestroy: function () {
         document.documentElement.removeEventListener('mousedown', this._onMouseDown, true);
         document.documentElement.removeEventListener('mousemove', this._onMouseMove, true);
@@ -94,7 +123,6 @@ Vue.component('vf-paper', {
     methods: {
         // Native listeners
         onMouseDown: function (e) {
-            //TODO save initial dragging position
             var target   = e.target || e.srcElement;
             var position = VueFlow.utils.getCursorPosition(e, this.$el);
 
@@ -123,7 +151,7 @@ Vue.component('vf-paper', {
                     var newX = VueFlow.utils.snapTo(position.x - this.cursorOffsetX + this.scrollPositionX, this.gridSize);
                     var newY = VueFlow.utils.snapTo(position.y - this.cursorOffsetY + this.scrollPositionY, this.gridSize);
 
-                    this.$set(this.blocks, index, Object.assign(this.blocks[index], {x: newX, y: newY}));
+                    this.$set(this.scene.blocks, index, Object.assign(this.scene.blocks[index], {x: newX, y: newY}));
 
                     this.sceneUpdate();
                 }
@@ -154,11 +182,11 @@ Vue.component('vf-paper', {
         onMouseUp: function (e) {
             var target = e.target || e.srcElement;
 
-            if (this.$el.contains(target)) {
+            /*if (this.$el.contains(target)) {
                 if (typeof target.className !== 'string' || target.className.indexOf('vf-port') < 0) {
                     this.draggingLink = null;
                 }
-            }
+            }*/
 
             this.action.dragging = null;
             this.action.linking  = false;
@@ -172,35 +200,14 @@ Vue.component('vf-paper', {
             var block = this.blockSearch(blockID);
             if (block) {
                 var port = block.portSearch(portID);
-                if (port) {
-                    var bounding = VueFlow.utils.getElementBounding(port.$el, this.$el);
-
-                    var x, y;
-                    switch (port.edge) {
-                        case VueFlow.portEdges.EDGE_TOP:
-                            x = bounding.x0 + ((bounding.x1 - bounding.x0) / 2);
-                            y = bounding.y0;
-                            break;
-                        case VueFlow.portEdges.EDGE_RIGHT:
-                            x = bounding.x1;
-                            y = bounding.y0 + ((bounding.y1 - bounding.y0) / 2);
-                            break;
-                        case VueFlow.portEdges.EDGE_BOTTOM:
-                            x = bounding.x0 + ((bounding.x1 - bounding.x0) / 2);
-                            y = bounding.y1;
-                            break;
-                        case VueFlow.portEdges.EDGE_LEFT:
-                            x = bounding.x0;
-                            y = bounding.y0 + ((bounding.y1 - bounding.y0) / 2);
-                            break;
-                    }
+                if (port) {console.log(block, port);
+                    var position = VueFlow.utils.getEdgeCenter(port.$el, port.edge, this.$el);
 
                     this.draggingLink = {
-                        id:          VueFlow.utils.generateUUID(),
-                        sourceX:     x,
-                        sourceY:     y,
-                        targetX:     x,
-                        targetY:     y,
+                        sourceX:     position.x,
+                        sourceY:     position.y,
+                        targetX:     position.x,
+                        targetY:     position.y,
                         sourceBlock: blockID,
                         sourcePort:  portID,
                         targetBlock: null,
@@ -215,36 +222,12 @@ Vue.component('vf-paper', {
                 if (block && this.draggingLink.sourceBlock !== blockID) {
                     var port = block.portSearch(portID);
                     if (port && this.draggingLink.sourcePort !== portID) {
-                        var bounding = VueFlow.utils.getElementBounding(port.$el, this.$el);
-
-                        var x, y;
-                        switch (port.edge) {
-                            case VueFlow.portEdges.EDGE_TOP:
-                                x = bounding.x0 + ((bounding.x1 - bounding.x0) / 2);
-                                y = bounding.y0;
-                                break;
-                            case VueFlow.portEdges.EDGE_RIGHT:
-                                x = bounding.x1;
-                                y = bounding.y0 + ((bounding.y1 - bounding.y0) / 2);
-                                break;
-                            case VueFlow.portEdges.EDGE_BOTTOM:
-                                x = bounding.x0 + ((bounding.x1 - bounding.x0) / 2);
-                                y = bounding.y1;
-                                break;
-                            case VueFlow.portEdges.EDGE_LEFT:
-                                x = bounding.x0;
-                                y = bounding.y0 + ((bounding.y1 - bounding.y0) / 2);
-                                break;
-                        }
-
-                        this.draggingLink.targetX     = x;
-                        this.draggingLink.targetY     = y;
-                        this.draggingLink.targetBlock = blockID;
-                        this.draggingLink.targetPort  =  portID;
-
-                        this.scene.links.push(this.draggingLink);
-                        this.sceneUpdate();
-                        //this.linkInsert();//TODO <-- use this
+                        this.linkInsert(
+                            this.draggingLink.sourceBlock,
+                            this.draggingLink.sourcePort,
+                            blockID,
+                            portID
+                        );
                     }
                 }
             }
@@ -269,7 +252,7 @@ Vue.component('vf-paper', {
             this.$emit('update:scene', this.sceneExport());
         },
         blockSearch: function (blockID) {
-            return this.$refs.blocks.find(function (block) { return block.id === blockID; });
+            return this.$refs.blocks ? this.$refs.blocks.find(function (block) { return block.id === blockID; }) : null;
         },
         blockInsert: function (type) {
             //TODO create block from type factory
@@ -302,7 +285,7 @@ Vue.component('vf-paper', {
         },
         blockRemove: function (blockID) {
             this.links.forEach(function (link) {
-                if (link.sourceBlockID === blockID || link.targetBlockID === blockID) {
+                if (link.sourceBlock === blockID || link.targetBlock === blockID) {
                     this.linkRemove(link.id);
                 }
             }.bind(this));
@@ -315,11 +298,11 @@ Vue.component('vf-paper', {
         },
         linkInsert: function (sourceBlock, sourcePort, targetBlock, targetPort) {
             this.links.push({
-                id: VueFlow.utils.generateUUID(),
+                id:          VueFlow.utils.generateUUID(),
                 sourceBlock: sourceBlock,
-                sourcePort: sourcePort,
+                sourcePort:  sourcePort,
                 targetBlock: targetBlock,
-                targetPort: targetPort
+                targetPort:  targetPort
             });
 
             this.sceneUpdate();
@@ -333,9 +316,6 @@ Vue.component('vf-paper', {
         }
     },
     watch: {
-        blocksContent () {
-            this.importBlocksContent()
-        },
         scene: function () { this.sceneImport(); }
     }
 });
