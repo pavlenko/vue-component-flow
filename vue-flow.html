@@ -48,6 +48,18 @@
         {id: 'p-24', edge: VueFlow.portEdges.EDGE_RIGHT, type: VueFlow.portTypes.TYPE_O},
     ];
 
+    //TODO try to create extension point like this:
+    VueFlow.blockTypes = {
+        START: {
+            extends: VueFlow.components['v-flow-block'],
+            components: {
+                'v-block-content': {
+                    template: '<div>AAA</div>'
+                }
+            }
+        }
+    };
+
     new Vue({
         el: '#app',
         data: {
