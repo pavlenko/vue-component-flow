@@ -48,8 +48,16 @@
 .v-flow-block-ports-top,
 .v-flow-block-ports-bottom {
     display: table;
+}
+
+.v-flow-block-ports-top {
     margin: -5px auto 0;
 }
+
+.v-flow-block-ports-bottom {
+    margin: 0 auto -5px;
+}
+
 .v-flow-block-ports-top .v-flow-block-port,
 .v-flow-block-ports-bottom .v-flow-block-port {
     display: table-cell;
