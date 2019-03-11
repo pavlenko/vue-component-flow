@@ -111,24 +111,20 @@ Vue.component('vf-paper', {
             }
         },
         onMouseMove: function (e) {
+            var position = VueFlow.utils.getCursorPosition(e, this.$el);
+
             if (this.action.dragging) {
                 var index = this.scene.blocks.findIndex(function (block) {
                     return block.id === this.action.dragging;
                 }.bind(this));
 
-                if (index >= 0) {console.log(this.$refs.blocks[index]);
-                    // todo resolve block offset
-                    var rect = VueFlow.utils.getElementPosition(this.$refs.blocks[index].$el);
-                    var pos  = VueFlow.utils.getCursorPosition(e, this.$el); //cursor position relative to parent
-
-                    var newX = VueFlow.utils.snapTo(pos.x + rect.x - this.cursorPositionX, this.gridSize);
-                    var newY = VueFlow.utils.snapTo(pos.y + rect.y - this.cursorPositionY, this.gridSize);
+                if (index >= 0) {
+                    var newX = VueFlow.utils.snapTo(position.x - this.cursorOffsetX + this.scrollPositionX, this.gridSize);
+                    var newY = VueFlow.utils.snapTo(position.y - this.cursorOffsetY + this.scrollPositionY, this.gridSize);
 
                     this.$set(this.scene.blocks, index, Object.assign(this.scene.blocks[index], {x: newX, y: newY}));
                 }
             }
-
-            var position = VueFlow.utils.getCursorPosition(e, this.$el);
 
             if (this.action.linking) {
                 this.draggingLink.targetX = position.x;
@@ -153,8 +149,6 @@ Vue.component('vf-paper', {
             }
         },
         onMouseUp: function (e) {
-            //TODO if dragging - update scene & reset dragging
-            //TODO if linking - reset linking
             var target = e.target || e.srcElement;
 
             if (this.$el.contains(target)) {
@@ -167,9 +161,7 @@ Vue.component('vf-paper', {
             this.action.linking  = false;
             this.action.panning  = false;
         },
-        onMouseWheel: function (e) {
-            //TODO handle zooming with limits
-        },
+        onMouseWheel: function (e) {},
         // Custom listeners
         onLinkingStart: function (e, blockID, port) {
             var position = VueFlow.utils.getCursorPosition(e, this.$el);
@@ -203,7 +195,6 @@ Vue.component('vf-paper', {
         },
         onLinkingRemove: function (link) { this.linkRemove(link.id); },
         onBlockSelect: function (block) { this.blockSelect(block.id); },
-        onBlockUpdate: function (block) { this.sceneUpdate(); },
         onBlockRemove: function (block) { this.blockRemove(block.id); },
         // Instance methods
         sceneImport: function () {
@@ -232,6 +223,14 @@ Vue.component('vf-paper', {
         },
         blockSelect: function (blockID) {
             this.action.dragging = blockID;
+
+            var index = this.blocks.findIndex(function (block) { return block.id === blockID; });
+            if (index >= 0) {
+                var position = VueFlow.utils.getElementPosition(this.$refs.blocks[index].$el);
+
+                this.cursorOffsetX = Math.abs(this.cursorPositionX - position.x);
+                this.cursorOffsetY = Math.abs(this.cursorPositionY - position.y);
+            }
 
             this.blocks.forEach(function (block) {
                 block.selected = (block.id === blockID);
