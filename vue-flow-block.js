@@ -1,6 +1,6 @@
 Vue.component('vf-block', {
     template:
-        '<div class="vf-block" :class="{selected: selected}" :style="style">' +
+        '<div class="vf-block" :class="{selected: selected}" :style="style" @mousedown="$emit(\'block-select\');">' +
         '    <div v-if="portsTop.length">' +
         '        <div style="display: table; margin: -5px auto 0">' +
         '            <div ref="ports" v-for="port in _ports.top"' +
@@ -105,14 +105,14 @@ Vue.component('vf-block', {
         }
     },
     mounted: function () {
-        document.documentElement.addEventListener('mousedown', this._onMouseDown = this.onMouseDown.bind(this), true);
-        document.documentElement.addEventListener('mousemove', this._onMouseMove = this.onMouseMove.bind(this), true);
-        document.documentElement.addEventListener('mouseup', this._onMouseUp = this.onMouseUp.bind(this), true);
+        // document.documentElement.addEventListener('mousedown', this._onMouseDown = this.onMouseDown.bind(this), true);
+        // document.documentElement.addEventListener('mousemove', this._onMouseMove = this.onMouseMove.bind(this), true);
+        // document.documentElement.addEventListener('mouseup', this._onMouseUp = this.onMouseUp.bind(this), true);
     },
     beforeDestroy: function () {
-        document.documentElement.removeEventListener('mousedown', this._onMouseDown, true);
-        document.documentElement.removeEventListener('mousemove', this._onMouseMove, true);
-        document.documentElement.removeEventListener('mouseup', this._onMouseUp, true);
+        // document.documentElement.removeEventListener('mousedown', this._onMouseDown, true);
+        // document.documentElement.removeEventListener('mousemove', this._onMouseMove, true);
+        // document.documentElement.removeEventListener('mouseup', this._onMouseUp, true);
     },
     methods: {
         getPorts: function (group) {
