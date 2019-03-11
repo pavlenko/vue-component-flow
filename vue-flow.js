@@ -300,6 +300,7 @@ Vue.component('v-flow-paper', {
         return {
             initialized: false,
             action: {
+                dragged:  false,
                 dragging: null,
                 linking:  false,
                 panning:  false
@@ -420,6 +421,8 @@ Vue.component('v-flow-paper', {
                 }.bind(this));
 
                 if (index >= 0) {
+                    this.action.dragged = true;
+
                     var newX = position.x - this.cursorOffsetX + this.scrollPositionX;
                     var newY = position.y - this.cursorOffsetY + this.scrollPositionY;
 
@@ -454,7 +457,7 @@ Vue.component('v-flow-paper', {
         onMouseUp: function (e) {
             var target = e.target || e.srcElement;
 
-            if (this.action.dragging && !this.action.linking) {
+            if (this.action.dragging && !this.action.linking && this.action.dragged) {
                 var position = VueFlow.utils.getCursorPosition(e, this.$el);
 
                 var index = this.blocks.findIndex(function (block) {
@@ -473,6 +476,7 @@ Vue.component('v-flow-paper', {
                 }
             }
 
+            this.action.dragged  = false;
             this.action.dragging = null;
             this.action.linking  = false;
             this.action.panning  = false;
