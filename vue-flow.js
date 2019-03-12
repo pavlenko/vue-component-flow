@@ -127,8 +127,8 @@ VueFlow.components['v-flow-line'] = {
             var radians = -Math.atan2(this.targetX - this.sourceX, this.targetY - this.sourceY);
             var degrees = radians * 180 / Math.PI;
 
-            var multiplierX = Math.abs(Math.sin(radians));
-            var multiplierY = Math.abs(Math.cos(radians));
+            var multiplierX = -Math.sin(radians);
+            var multiplierY = Math.cos(radians);
 
             var buttonPosition = {
                 x: this.targetX - 16 * multiplierX,
