@@ -34,6 +34,7 @@
 .v-flow-block-ports-top,
 .v-flow-block-ports-bottom {
     display: table;
+    height: 10px;
 }
 
 .v-flow-block-ports-top {
@@ -65,7 +66,7 @@
 
 .v-flow-block-ports-left,
 .v-flow-block-ports-right {
-    width: 1px;
+    width: 10px;
 }
 
 .v-flow-block-content {

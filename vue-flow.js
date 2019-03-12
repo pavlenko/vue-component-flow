@@ -177,7 +177,7 @@ VueFlow.components['v-flow-block'] = {
     },
     template:
         '<div class="v-flow-block" :class="{selected: selected}" :style="style" @mousedown="$emit(\'block-select\');">' +
-        '    <div class="v-flow-block-ports-top" v-if="_ports.top.length">' +
+        '    <div class="v-flow-block-ports-top">' +
         '        <div class="v-flow-block-port" v-for="port in _ports.top" :key="port.id">' +
         '            <v-flow-port ref="ports"' +
         '                         v-bind.sync="port"' +
@@ -187,7 +187,7 @@ VueFlow.components['v-flow-block'] = {
         '    </div>' +
         '    <div class="v-flow-block-body-wrapper">' +
         '        <div class="v-flow-block-body">' +
-        '            <div class="v-flow-block-ports-left" v-if="_ports.left.length">' +
+        '            <div class="v-flow-block-ports-left">' +
         '                <div v-for="port in _ports.left" :key="port.id">' +
         '                    <v-flow-port ref="ports"' +
         '                                 v-bind.sync="port"' +
@@ -198,7 +198,7 @@ VueFlow.components['v-flow-block'] = {
         '            <div class="v-flow-block-content">' +
         '                <button type="button" @click="$emit(\'block-remove\')">x</button>' +
         '            </div>' +
-        '            <div class="v-flow-block-ports-right" v-if="_ports.right.length">' +
+        '            <div class="v-flow-block-ports-right">' +
         '                <div v-for="port in _ports.right" :key="port.id">' +
         '                    <v-flow-port ref="ports"' +
         '                                 v-bind.sync="port"' +
@@ -208,7 +208,7 @@ VueFlow.components['v-flow-block'] = {
         '            </div>' +
         '        </div>' +
         '    </div>' +
-        '    <div class="v-flow-block-ports-bottom" v-if="_ports.bottom.length">' +
+        '    <div class="v-flow-block-ports-bottom">' +
         '        <div class="v-flow-block-port" v-for="port in _ports.bottom" :key="port.id">' +
         '            <v-flow-port ref="ports"' +
         '                         v-bind.sync="port"' +
@@ -222,7 +222,7 @@ VueFlow.components['v-flow-block'] = {
         x:        {type: Number},
         y:        {type: Number},
         selected: {type: Boolean, default: false},
-        ports:    {type: Object, default: function () { return []; }},
+        ports:    {type: Array, default: function () { return []; }},
         options:  {type: Object, default: function () { return []; }}
     },
     computed: {
