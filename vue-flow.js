@@ -108,11 +108,11 @@ VueFlow.components['v-flow-line'] = {
         '    <path d="M -1 -1 L 0 1 L 1 -1 z" stroke="#666" stroke-width="6" stroke-opacity="1" fill="none" :transform="styles.targetArrow.transform" />' +
         '</g>',
     props: {
-        id:      String,
-        sourceX: Number,
-        sourceY: Number,
-        targetX: Number,
-        targetY: Number
+        id:      {type: String},
+        sourceX: {type: Number},
+        sourceY: {type: Number},
+        targetX: {type: Number},
+        targetY: {type: Number}
     },
     computed: {
         d: function () {
@@ -164,9 +164,10 @@ VueFlow.components['v-flow-port'] = {
     template:
         '<div :class="\'v-flow-port v-flow-port-\' + edge" @mousedown="$emit(\'port-mouse-down\', $event)" @mouseup="$emit(\'port-mouse-up\', $event)" />',
     props: {
-        id:   {type: String, required: true},
-        edge: {type: String, required: true},
-        type: {type: String, required: true}
+        id:      {type: String, required: true},
+        edge:    {type: String, required: true},
+        type:    {type: String, required: true},
+        options: {type: Object, default: function () { return []; }}
     }
 };
 
@@ -217,11 +218,12 @@ VueFlow.components['v-flow-block'] = {
         '    </div>' +
         '</div>',
     props: {
-        id: String,
-        x: Number,
-        y: Number,
-        selected: Boolean,
-        ports: {type: Object, default: function () { return []; }}
+        id:       {type: String, required: true},
+        x:        {type: Number},
+        y:        {type: Number},
+        selected: {type: Boolean, default: false},
+        ports:    {type: Object, default: function () { return []; }},
+        options:  {type: Object, default: function () { return []; }}
     },
     computed: {
         style: function () {
@@ -262,6 +264,11 @@ VueFlow.components['v-flow-block'] = {
                 edge: edge,
                 type: type
             });
+        },
+        portRemove: function (portID) {
+            this.ports = this.ports.filter(function (port) {
+                return port.id !== portID;
+            });
         }
     }
 };
@@ -290,12 +297,12 @@ VueFlow.components['v-flow-paper'] = {
         '    </div>' +
         '</div>',
     props: {
-        sizeW:    {type: String, default: '2000px'},
-        sizeH:    {type: String, default: '1000px'},
-        maxW:     {type: String, default: '100%'},
-        maxH:     {type: String, default: '400px'},
-        gridShow: Boolean,
-        gridSize: {type: Number, default: 10, validator: function (value) { return value > 0; }},
+        sizeW:               {type: String, default: '2000px'},
+        sizeH:               {type: String, default: '1000px'},
+        maxW:                {type: String, default: '100%'},
+        maxH:                {type: String, default: '400px'},
+        gridShow:            {type: Boolean},
+        gridSize:            {type: Number, default: 10, validator: function (value) { return value > 0; }},
         gridColorForeground: {type: String, default: 'rgba(102, 102, 102, 0.2)'},
         gridColorBackground: {type: String, default: '#ffffff'},
         scene: {
