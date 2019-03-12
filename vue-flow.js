@@ -97,7 +97,7 @@ var VueFlow = {
     }
 };
 
-Vue.component('v-flow-line', {
+VueFlow.components['v-flow-line'] = {
     template:
         '<g class="v-flow-line">' +
         '    <path :d="d" stroke="#333" stroke-width="1" fill="none" />' +
@@ -147,20 +147,20 @@ Vue.component('v-flow-line', {
 
             return {
                 deleteButton: {
-                    transform: 'translate(' + buttonPosition.x + ', ' + buttonPosition.y + ') rotate(' + degrees +')'
+                    transform: 'translate(' + buttonPosition.x + ', ' + buttonPosition.y + ') rotate(' + degrees + ')'
                 },
                 sourceArrow: {
-                    transform: 'translate(' + sArrowPosition.x + ', ' + sArrowPosition.y + ') rotate(' + (degrees - 180) +')'
+                    transform: 'translate(' + sArrowPosition.x + ', ' + sArrowPosition.y + ') rotate(' + (degrees - 180) + ')'
                 },
                 targetArrow: {
-                    transform: 'translate(' + tArrowPosition.x + ', ' + tArrowPosition.y + ') rotate(' + degrees +')'
+                    transform: 'translate(' + tArrowPosition.x + ', ' + tArrowPosition.y + ') rotate(' + degrees + ')'
                 }
             };
         }
     }
-});
+};
 
-Vue.component('v-flow-port', {
+VueFlow.components['v-flow-port'] = {
     template:
         '<div :class="\'v-flow-port v-flow-port-\' + edge" @mousedown="$emit(\'port-mouse-down\', $event)" @mouseup="$emit(\'port-mouse-up\', $event)" />',
     props: {
@@ -168,9 +168,12 @@ Vue.component('v-flow-port', {
         edge: {type: String, required: true},
         type: {type: String, required: true}
     }
-});
+};
 
-Vue.component('v-flow-block', {
+VueFlow.components['v-flow-block'] = {
+    components: {
+        'v-flow-port': VueFlow.components['v-flow-port']
+    },
     template:
         '<div class="v-flow-block" :class="{selected: selected}" :style="style" @mousedown="$emit(\'block-select\');">' +
         '    <div class="v-flow-block-ports-top" v-if="_ports.top.length">' +
@@ -261,9 +264,13 @@ Vue.component('v-flow-block', {
             });
         }
     }
-});
+};
 
-Vue.component('v-flow-paper', {
+VueFlow.components['v-flow-paper'] = {
+    components: {
+        'v-flow-line': VueFlow.components['v-flow-line'],
+        'v-flow-block': VueFlow.components['v-flow-block']
+    },
     template:
         '<div class="v-flow-paper-container" :style="styles.wrapper">' +
         '    <div class="v-flow-paper" ref="paper" :style="styles.paper">' +
@@ -606,5 +613,5 @@ Vue.component('v-flow-paper', {
     watch: {
         scene: function () { this.sceneImport(); }
     }
-});
+};
 
