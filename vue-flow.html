@@ -16,6 +16,7 @@
 <script src="bower_components/jquery/dist/jquery.min.js"></script>
 <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="bower_components/vue/dist/vue.min.js"></script>
+<script src="vue-bs-modal.js"></script>
 <script src="vue-flow.js"></script>
 <script>
     var ports1 = [
@@ -60,53 +61,10 @@
         }
     };
 
-    var modal = Vue.extend({
-        template:
-            '<div class="modal" tabindex="-1" role="dialog">' +
-            '  <div class="modal-dialog" role="document">' +
-            '    <div class="modal-content">' +
-            '      <div class="modal-header">' +
-            '        <button type="button" class="close" @click.prevent="hide"><span aria-hidden="true">&times;</span></button>' +
-            '        <h4 class="modal-title">Modal title</h4>' +
-            '      </div>\n' +
-            '      <div class="modal-body">' +
-            '        <bs-modal-body>One fine body&hellip;</bs-modal-body>' +
-            '      </div>' +
-            '      <div class="modal-footer">' +
-            '        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>' +
-            '        <button type="button" class="btn btn-primary">Save changes</button>' +
-            '      </div>' +
-            '    </div>' +
-            '  </div>' +
-            '</div>',
+    var modal2 = VueBSModal.extend({
         components: {
-            'bs-modal-body': {
-                template: '<p slot="default"></p>'
-            }
-        },
-        methods: {
-            show: function () {
-                this.$mount();
-                //TODO scroll, padding-right, backdrop
-                //this.$el.style.display = 'block';
-                //document.body.classList.add('modal-open');
-                document.body.appendChild(this.$el);
-                $(this.$el).modal('show');
-            },
-            hide: function () {
-                $(this.$el).on('hidden.bs.modal', function () {
-                    this.$el.parentNode.removeChild(this.$el);
-                }.bind(this));
-            },
-        }
-    });
-
-    console.log(modal);
-
-    var modal2 = modal.extend({
-        components: {
-            'bs-modal-body': {
-                template: '<div style="height: 1100px">AAA</div>'
+            'v-bs-modal-body': {
+                template: '<div class="modal-body"><div style="height: 1100px">AAA</div></div>'
             }
         }
     });
@@ -138,14 +96,21 @@
             '    <v-flow-paper :gridShow="true" ref="paper" :scene.sync="scene" />' +
             '    <button type="button" class="btn btn-default" v-on:click="insertBlock">add</button>' +
             '    <button type="button" class="btn btn-default" v-on:click="modal">modal</button>' +
-            //'    <pre style="font-size: 10px">{{ JSON.stringify(scene, null, \'    \') }}</pre>' +
+            '    <pre style="font-size: 10px">{{ JSON.stringify(scene, null, \'    \') }}</pre>' +
             '</div>',
         methods: {
             insertBlock: function () {
                 this.$refs.paper.blockInsert();
             },
             modal: function () {
-                new modal2().show();
+                var modal = new modal2({
+                    propsData: {
+                        backdrop: false,
+                        data:     {foo: 'bar'}
+                    }
+                });
+                modal.$show();
+                modal.$on('update', function (data) { console.log(data); });
             }
         }
     });
