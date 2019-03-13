@@ -560,9 +560,9 @@ VueFlow.components['v-flow-paper'] = {
         blockInsert: function (type) {
             //TODO create block from type factory
             this.blocks.push({
-                id: VueFlow.utils.generateUUID(),
-                x: 0,
-                y: 0,
+                id:       VueFlow.utils.generateUUID(),
+                x:        VueFlow.utils.snapTo(this.$el.scrollLeft + this.$el.clientWidth / 2, this.gridSize),
+                y:        VueFlow.utils.snapTo(this.$el.scrollTop + this.$el.clientHeight / 2, this.gridSize),
                 selected: false
             });
 
